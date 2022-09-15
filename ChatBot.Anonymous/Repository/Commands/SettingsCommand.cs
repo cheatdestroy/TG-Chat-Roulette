@@ -22,7 +22,7 @@ namespace ChatBot.Anonymous.Repository.Commands
             };
         }
 
-        public async Task Execute(ITelegramBotClient client, Message? message)
+        public async Task Execute(ITelegramBotClient client, Message message)
         {
             var (chatId, messageId, text) = CommandHelper.GetRequiredParams(message);
 

@@ -8,12 +8,12 @@ namespace ChatBot.Anonymous.Models.Interfaces
         /// <summary>
         /// Название команды
         /// </summary>
-        public abstract string Name { get; }
+        public string Name { get; }
 
         /// <summary>
         /// Список слов/команд для вызова команды
         /// </summary>
-        public abstract List<string> Triggers { get; set; }
+        public List<string> Triggers { get; set; }
 
         /// <summary>
         /// Вызывает обработку команды
@@ -21,6 +21,6 @@ namespace ChatBot.Anonymous.Models.Interfaces
         /// <param name="client"></param>
         /// <param name="message"></param>
         /// <returns></returns>
-        public abstract Task Execute(ITelegramBotClient client, Message message);
+        public Task Execute(ITelegramBotClient client, Message message);
     }
 }
