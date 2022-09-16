@@ -1,7 +1,7 @@
 ﻿using ChatBot.Anonymous.Models.Interfaces;
 using Telegram.Bot.Types;
 
-namespace ChatBot.Anonymous.Helpers
+namespace ChatBot.Anonymous.Common.Helpers
 {
     /// <summary>
     /// Вспомогательные функции для команд

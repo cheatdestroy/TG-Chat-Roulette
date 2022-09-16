@@ -1,4 +1,4 @@
-﻿namespace ChatBot.Anonymous.Repository.Category
+﻿namespace ChatBot.Anonymous.Common.Enums
 {
     /// <summary>
     /// Пол пользователя

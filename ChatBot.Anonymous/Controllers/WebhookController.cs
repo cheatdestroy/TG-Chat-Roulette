@@ -1,7 +1,4 @@
-﻿using ChatBot.Anonymous.Models;
-using ChatBot.Anonymous.Repository;
-using ChatBot.Anonymous.Repository.Category;
-using ChatBot.Anonymous.Services;
+﻿using ChatBot.Anonymous.Services;
 using Microsoft.AspNetCore.Mvc;
 using Telegram.Bot;
 using Telegram.Bot.Types;

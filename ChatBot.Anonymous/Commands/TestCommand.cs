@@ -1,9 +1,9 @@
-﻿using ChatBot.Anonymous.Helpers;
+﻿using ChatBot.Anonymous.Common.Helpers;
 using ChatBot.Anonymous.Models.Interfaces;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 
-namespace ChatBot.Anonymous.Repository.Commands
+namespace ChatBot.Anonymous.Commands
 {
     /// <summary>
     /// Команда для теста
