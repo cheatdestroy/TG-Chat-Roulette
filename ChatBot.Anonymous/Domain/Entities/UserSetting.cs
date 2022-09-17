@@ -5,7 +5,7 @@ namespace ChatBot.Anonymous.Domain.Entities
 {
     public partial class UserSetting
     {
-        public int UserId { get; set; }
+        public long UserId { get; set; }
         public int? PreferredGender { get; set; }
         public int? PreferredAge { get; set; }
 

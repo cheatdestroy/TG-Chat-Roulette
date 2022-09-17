@@ -11,7 +11,7 @@ namespace ChatBot.Anonymous.Domain.Entities
             ChatRoomSecondUsers = new HashSet<ChatRoom>();
         }
 
-        public int UserId { get; set; }
+        public long UserId { get; set; }
         public int? Gender { get; set; }
         public int? Age { get; set; }
         public DateTime CreatedAt { get; set; }

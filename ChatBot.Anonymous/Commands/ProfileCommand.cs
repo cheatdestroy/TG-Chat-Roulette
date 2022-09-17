@@ -8,23 +8,23 @@ namespace ChatBot.Anonymous.Commands
     /// <summary>
     /// Команда настроек
     /// </summary>
-    public class SettingsCommand : ICommandBase
+    public class ProfileCommand : ICommandBase
     {
-        public string Name => "Настройки";
+        public string Name => "Профиль";
 
         public List<string> Triggers { get; set; }
 
-        public SettingsCommand()
+        public ProfileCommand()
         {
             Triggers = new List<string>
             {
-                "/start"
+                "/profile"
             };
         }
 
         public async Task Execute(ITelegramBotClient client, Message message)
         {
-            var (chatId, messageId, text) = CommandHelper.GetRequiredParams(message);
+            var (_, chatId, messageId, text) = CommandHelper.GetRequiredParams(message);
 
             await client.SendTextMessageAsync(chatId, Name, replyToMessageId: messageId);
         }

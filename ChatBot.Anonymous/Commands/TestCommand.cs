@@ -25,7 +25,7 @@ namespace ChatBot.Anonymous.Commands
 
         public async Task Execute(ITelegramBotClient client, Message message)
         {
-            var (chatId, messageId, _) = CommandHelper.GetRequiredParams(message);
+            var (_, chatId, messageId, _) = CommandHelper.GetRequiredParams(message);
 
             await client.SendTextMessageAsync(chatId, Name, replyToMessageId: messageId);
         }
