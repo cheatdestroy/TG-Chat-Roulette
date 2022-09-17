@@ -1,4 +1,5 @@
-﻿using ChatBot.Anonymous.Services;
+﻿using ChatBot.Anonymous.Models.Interfaces;
+using ChatBot.Anonymous.Services;
 using Microsoft.AspNetCore.Mvc;
 using Telegram.Bot;
 using Telegram.Bot.Types;
@@ -9,13 +10,11 @@ namespace ChatBot.Anonymous.Controllers
     [Route("api/webhook")]
     public class WebhookController : ControllerBase
     {
-        private readonly ITelegramBotClient _botClient;
-        private readonly ConfigureCommand _configureCommand;
+        private readonly ICommandService _serviceCommand;
 
-        public WebhookController(ITelegramBotClient botClient, ConfigureCommand configureCommand)
+        public WebhookController(ICommandService serviceCommand)
         {
-            _botClient = botClient;
-            _configureCommand = configureCommand;
+            _serviceCommand = serviceCommand;
         }
 
         [HttpPost("update")]
@@ -25,7 +24,7 @@ namespace ChatBot.Anonymous.Controllers
 
             if (message != null)
             {
-                await _configureCommand.SearchAndExecuteCommand(_botClient, message);
+                await _serviceCommand.SearchAndExecuteCommand(message);
             }
 
             return Ok();

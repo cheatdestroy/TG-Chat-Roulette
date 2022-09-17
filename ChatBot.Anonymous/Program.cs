@@ -6,6 +6,8 @@ using ChatBot.Anonymous.Services;
 using ChatBot.Anonymous.Services.CollectionExtension;
 using Microsoft.EntityFrameworkCore;
 using Telegram.Bot;
+using ChatBot.Anonymous.Domain.Repository.Interfaces;
+using ChatBot.Anonymous.Domain.Repository;
 
 var builder = WebApplication.CreateBuilder(args);
 var botConfig = builder.Configuration.GetSection("BotConfiguration").Get<BotConfiguration>();
@@ -14,21 +16,20 @@ var dbConfig = builder.Configuration.GetConnectionString("ConnectingString");
 // Добавление конфигурации вебхука
 builder.Services.AddHostedService<ConfigureWebHook>();
 
-// Добавление команд в общий пул
-builder.Services.AddCommands(
-    new List<ICommandBase>
-    {
-        new SettingsCommand(),
-        new TestCommand()
-    }
-);
-
 // Замена стандартного HttpClient
 builder.Services.AddHttpClient("tgwebhook")
     .AddTypedClient<ITelegramBotClient>(httpClient => new TelegramBotClient(botConfig.Token, httpClient));
 
 // Контекст базы данных
 builder.Services.AddDbContext<BotDbContext>(options => options.UseSqlServer(dbConfig));
+
+builder.Services.AddTransient<IUser, UsersRepository>();
+
+// Добавление конфигурации команд и сами команды
+builder.Services.AddCommandConfigure<CommandService>()
+    .AddCommand<StartCommand>()
+    .AddCommand<ProfileCommand>()
+    .AddCommand<TestCommand>();
 
 builder.Services.AddControllers()
     .AddNewtonsoftJson();

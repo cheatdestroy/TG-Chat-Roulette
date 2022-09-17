@@ -1,4 +1,5 @@
-﻿using ChatBot.Anonymous.Models.Interfaces;
+﻿using ChatBot.Anonymous.Commands;
+using ChatBot.Anonymous.Models.Interfaces;
 
 namespace ChatBot.Anonymous.Services.CollectionExtension
 {
@@ -8,21 +9,27 @@ namespace ChatBot.Anonymous.Services.CollectionExtension
     public static class CommandsServiceCollectionExtension
     {
         /// <summary>
-        /// Создаёт конфигурацию бота и регистрирует указанные команды
+        /// Добавляет сервис команд в контейнер DI
         /// </summary>
-        /// <param name="services"> DI </param>
-        /// <param name="commands"> Список команд </param>
+        /// <typeparam name="T"> Сервис команд </typeparam>
+        /// <param name="services"> Контейнер </param>
         /// <returns></returns>
-        public static IServiceCollection AddCommands(this IServiceCollection services, List<ICommandBase> commands)
+        public static IServiceCollection AddCommandConfigure<T>(this IServiceCollection services) where T : class, ICommandService
         {
-            services.AddTransient(serviceProvider =>
-            {
-                var configureCommand = new ConfigureCommand();
+            services.AddSingleton<ICommandService, T>();
 
-                configureCommand.CommandsList.AddRange(commands);
+            return services;
+        }
 
-                return configureCommand;
-            });
+        /// <summary>
+        /// Добавляет команды в контейнер DI
+        /// </summary>
+        /// <typeparam name="T"> Команда </typeparam>
+        /// <param name="services"> Контейнер </param>
+        /// <returns></returns>
+        public static IServiceCollection AddCommand<T>(this IServiceCollection services) where T : class, ICommandBase
+        {
+            services.AddSingleton<ICommandBase, T>();
 
             return services;
         }

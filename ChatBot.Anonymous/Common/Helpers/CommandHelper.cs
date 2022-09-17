@@ -12,10 +12,10 @@ namespace ChatBot.Anonymous.Common.Helpers
         /// Получение обязательных параметров
         /// </summary>
         /// <param name="message"></param>
-        /// <returns> Возвращает идентификатор чата, идентификатор сообщения, текс сообщения </returns>
-        public static (long, int, string?) GetRequiredParams(Message message)
+        /// <returns> Возвращает идентификатор пользователя, идентификатор чата, идентификатор сообщения, текст сообщения </returns>
+        public static (long?, long, int, string?) GetRequiredParams(Message message)
         {
-            return (message.Chat.Id, message.MessageId, message.Text);
+            return (message.From?.Id, message.Chat.Id, message.MessageId, message.Text);
         }
     }
 }

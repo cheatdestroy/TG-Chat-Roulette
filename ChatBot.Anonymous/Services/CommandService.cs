@@ -5,36 +5,40 @@ using Telegram.Bot.Types;
 namespace ChatBot.Anonymous.Services
 {
     /// <summary>
-    /// Конфигуратор команд
+    /// Сервис команд
     /// </summary>
-    public class ConfigureCommand
+    public class CommandService : ICommandService
     {
+        private readonly ITelegramBotClient _botClient;
+
         /// <summary>
         /// Список зарегистрированных команд
         /// </summary>
         public List<ICommandBase> CommandsList { get; }
 
-        public ConfigureCommand()
+        public CommandService(IServiceProvider serviceProvider, ITelegramBotClient botClient)
         {
-            CommandsList = new List<ICommandBase>();
+            using var scope = serviceProvider.CreateScope();
+            var commands = scope.ServiceProvider.GetServices<ICommandBase>();
+
+            CommandsList = new List<ICommandBase>(commands);
+            _botClient = botClient;
         }
 
         /// <summary>
         /// Поиск команды по отправленному сообщению и её последующий вызов
         /// </summary>
-        /// <param name="botClient"></param>
         /// <param name="message"></param>
-        /// <returns></returns>
-        public async Task SearchAndExecuteCommand(ITelegramBotClient botClient, Message message)
+        public async Task SearchAndExecuteCommand(Message message)
         {
-            var command = CommandsList.FirstOrDefault(x => 
+            var command = CommandsList.FirstOrDefault(x =>
             {
                 return x.Triggers.Any(trigger => trigger.Equals(message.Text));
             });
 
             if (command != null)
             {
-                await command.Execute(botClient, message);
+                await command.Execute(_botClient, message);
             }
         }
     }
