@@ -10,24 +10,28 @@ namespace ChatBot.Anonymous.Commands
     /// </summary>
     public class TestCommand : ICommandBase
     {
+        private readonly ITelegramBotClient _botClient;
+
         public string Name => "Тестовая команда";
 
         public List<string> Triggers { get; set; }
 
-        public TestCommand()
+        public TestCommand(ITelegramBotClient botClient)
         {
             Triggers = new List<string>
             {
                 "/test",
                 "/unk"
             };
+
+            _botClient = botClient;
         }
 
-        public async Task Execute(ITelegramBotClient client, Message message)
+        public async Task Execute(Message message)
         {
             var (_, chatId, messageId, _) = CommandHelper.GetRequiredParams(message);
 
-            await client.SendTextMessageAsync(chatId, Name, replyToMessageId: messageId);
+            await _botClient.SendTextMessageAsync(chatId, Name, replyToMessageId: messageId);
         }
     }
 }

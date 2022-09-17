@@ -15,7 +15,7 @@ namespace ChatBot.Anonymous.Services
         public ConfigureWebHook(IServiceProvider serviceProvider, IConfiguration configuration)
         {
             _serviceProvider = serviceProvider;
-            _botConfiguration = configuration.GetSection("BotConfiguration").Get<BotConfiguration>();
+            _botConfiguration = configuration.GetRequiredSection("BotConfiguration").Get<BotConfiguration>();
         }
 
         public async Task StartAsync(CancellationToken cancellationToken)

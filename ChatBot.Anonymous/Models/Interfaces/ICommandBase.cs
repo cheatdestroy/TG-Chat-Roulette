@@ -18,9 +18,8 @@ namespace ChatBot.Anonymous.Models.Interfaces
         /// <summary>
         /// Вызывает обработку команды
         /// </summary>
-        /// <param name="client"></param>
         /// <param name="message"></param>
         /// <returns></returns>
-        Task Execute(ITelegramBotClient client, Message message);
+        Task Execute(Message message);
     }
 }

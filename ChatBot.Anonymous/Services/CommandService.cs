@@ -9,20 +9,11 @@ namespace ChatBot.Anonymous.Services
     /// </summary>
     public class CommandService : ICommandService
     {
-        private readonly ITelegramBotClient _botClient;
-
-        /// <summary>
-        /// Список зарегистрированных команд
-        /// </summary>
-        public List<ICommandBase> CommandsList { get; }
+        private readonly IServiceProvider _serviceProvider;
 
         public CommandService(IServiceProvider serviceProvider, ITelegramBotClient botClient)
         {
-            using var scope = serviceProvider.CreateScope();
-            var commands = scope.ServiceProvider.GetServices<ICommandBase>();
-
-            CommandsList = new List<ICommandBase>(commands);
-            _botClient = botClient;
+            _serviceProvider = serviceProvider;
         }
 
         /// <summary>
@@ -31,14 +22,17 @@ namespace ChatBot.Anonymous.Services
         /// <param name="message"></param>
         public async Task SearchAndExecuteCommand(Message message)
         {
-            var command = CommandsList.FirstOrDefault(x =>
+            using var scope = _serviceProvider.CreateAsyncScope();
+            var commands = scope.ServiceProvider.GetServices<ICommandBase>();
+
+            var command = commands?.FirstOrDefault(x =>
             {
                 return x.Triggers.Any(trigger => trigger.Equals(message.Text));
             });
 
             if (command != null)
             {
-                await command.Execute(_botClient, message);
+                await command.Execute(message);
             }
         }
     }

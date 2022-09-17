@@ -29,7 +29,7 @@ namespace ChatBot.Anonymous.Services.CollectionExtension
         /// <returns></returns>
         public static IServiceCollection AddCommand<T>(this IServiceCollection services) where T : class, ICommandBase
         {
-            services.AddSingleton<ICommandBase, T>();
+            services.AddTransient<ICommandBase, T>();
 
             return services;
         }

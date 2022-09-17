@@ -10,11 +10,19 @@ using ChatBot.Anonymous.Domain.Repository.Interfaces;
 using ChatBot.Anonymous.Domain.Repository;
 
 var builder = WebApplication.CreateBuilder(args);
-var botConfig = builder.Configuration.GetSection("BotConfiguration").Get<BotConfiguration>();
-var dbConfig = builder.Configuration.GetConnectionString("ConnectingString");
+var botConfig = builder.Configuration.GetRequiredSection("BotConfiguration").Get<BotConfiguration>();
+var dbConfig = builder.Configuration.GetRequiredSection("DBConfiguration")["ConnectingString"];
+
+builder.Services.AddTransient<IUser, UsersRepository>();
 
 // Добавление конфигурации вебхука
 builder.Services.AddHostedService<ConfigureWebHook>();
+
+// Добавление конфигурации команд и сами команды
+builder.Services.AddCommandConfigure<CommandService>()
+    .AddCommand<StartCommand>()
+    .AddCommand<ProfileCommand>()
+    .AddCommand<TestCommand>();
 
 // Замена стандартного HttpClient
 builder.Services.AddHttpClient("tgwebhook")
@@ -22,14 +30,6 @@ builder.Services.AddHttpClient("tgwebhook")
 
 // Контекст базы данных
 builder.Services.AddDbContext<BotDbContext>(options => options.UseSqlServer(dbConfig));
-
-builder.Services.AddTransient<IUser, UsersRepository>();
-
-// Добавление конфигурации команд и сами команды
-builder.Services.AddCommandConfigure<CommandService>()
-    .AddCommand<StartCommand>()
-    .AddCommand<ProfileCommand>()
-    .AddCommand<TestCommand>();
 
 builder.Services.AddControllers()
     .AddNewtonsoftJson();

@@ -9,23 +9,25 @@ namespace ChatBot.Anonymous.Commands
 {
     public class StartCommand : ICommandBase
     {
+        private readonly ITelegramBotClient _botClient;
         private readonly IUser _user;
 
         public string Name => "Инициализация";
 
         public List<string> Triggers { get; set; }
 
-        public StartCommand(IUser user)
+        public StartCommand(ITelegramBotClient botClient, IUser user)
         {
             Triggers = new List<string>
             {
                 "/start"
             };
 
+            _botClient = botClient;
             _user = user;
         }
 
-        public async Task Execute(ITelegramBotClient client, Message message)
+        public async Task Execute(Message message)
         {
             var (userId, chatId, _, _) = CommandHelper.GetRequiredParams(message);
 
@@ -36,7 +38,7 @@ namespace ChatBot.Anonymous.Commands
 
             var user = await _user.GetById(userId: userId.Value) ?? await _user.SaveUser(userId: userId.Value);
 
-            await client.SendTextMessageAsync(chatId, $"{user!.UserId} | {chatId}");
+            await _botClient.SendTextMessageAsync(chatId, $"{user!.UserId} | {chatId}");
         }
     }
 }
