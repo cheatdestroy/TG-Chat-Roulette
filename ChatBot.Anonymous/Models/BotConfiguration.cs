@@ -21,6 +21,16 @@
         public string Token { get; set; } = default!;
 
         /// <summary>
+        /// Лимит получаемых данных по умолчанию
+        /// </summary>
+        public int DefaultLimit { get; set; }
+
+        /// <summary>
+        /// Смещение получаемых данных по умолчанию
+        /// </summary>
+        public int DefaultOffset { get; set; }
+
+        /// <summary>
         /// Максимально возможный возраст для общения
         /// </summary>
         public uint MaximumAge { get; set; }

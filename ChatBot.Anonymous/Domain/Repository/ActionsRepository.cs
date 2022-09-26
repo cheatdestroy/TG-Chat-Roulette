@@ -1,6 +1,8 @@
-﻿using ChatBot.Anonymous.Domain.Context;
+﻿using ChatBot.Anonymous.Common.Helpers;
+using ChatBot.Anonymous.Domain.Context;
 using ChatBot.Anonymous.Domain.Entities;
 using ChatBot.Anonymous.Domain.Repository.Interfaces;
+using ChatBot.Anonymous.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace ChatBot.Anonymous.Domain.Repository
@@ -8,16 +10,19 @@ namespace ChatBot.Anonymous.Domain.Repository
     public class ActionsRepository : IAction
     {
         private readonly BotDbContext _context;
+        private readonly BotConfiguration _configuration;
 
-        public ActionsRepository(BotDbContext context)
+        public ActionsRepository(BotDbContext context, IConfiguration configuration)
         {
             _context = context;
+            _configuration = configuration.GetMainConfigurationToObject();
         }
 
         public IQueryable<ActionData> Get(int? limit = null, int? offset = null)
         {
-            var actions = _context.Actions.Skip(offset ?? 0)
-                .Take(limit ?? 25);
+            var actions = _context.Actions
+                .Skip(offset ?? _configuration.DefaultOffset)
+                .Take(limit ?? _configuration.DefaultLimit);
 
             return actions;
         }

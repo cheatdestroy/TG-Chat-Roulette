@@ -274,7 +274,7 @@ namespace ChatBot.Anonymous.Commands.Actions
 
             if (gender.IsNotOwnerValue(typeof(Gender)))
             {
-                throw new ArgumentOutOfRangeException(nameof(gender), "Gender is null");
+                throw new ArgumentOutOfRangeException(nameof(gender), "Gender is not valid");
             }
 
             await _repositoryService.User.SaveUser(userId: userId, gender: gender);
@@ -292,7 +292,8 @@ namespace ChatBot.Anonymous.Commands.Actions
                     chatId: userId,
                     text: $"_Возраст не может быть меньше {minimumAge} или больше {maximumAge}_",
                     parseMode: ParseMode.Markdown);
-                return;
+
+                throw new ArgumentOutOfRangeException(nameof(age), "Age is not within the specified range (min - max)");
             }
 
             await _repositoryService.User.SaveUser(userId: userId, age: age);
@@ -300,7 +301,14 @@ namespace ChatBot.Anonymous.Commands.Actions
 
         private async Task ProcessingChatTypeStep(string data, long userId)
         {
+            int? chatType = Convert.ToInt32(data);
 
+            if (chatType.IsNotOwnerValue(typeof(CommunicationType)))
+            {
+                throw new ArgumentOutOfRangeException(nameof(chatType), "ChatType is not valid");
+            }
+
+            await _repositoryService.Settings.SaveSetting(userId: userId, preferredChatType: chatType);
         }
         #endregion
     }

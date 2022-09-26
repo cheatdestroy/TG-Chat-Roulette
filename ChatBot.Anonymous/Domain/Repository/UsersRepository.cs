@@ -2,24 +2,28 @@
 using ChatBot.Anonymous.Domain.Context;
 using ChatBot.Anonymous.Domain.Entities;
 using ChatBot.Anonymous.Domain.Repository.Interfaces;
+using ChatBot.Anonymous.Common.Helpers;
 using Microsoft.EntityFrameworkCore;
+using ChatBot.Anonymous.Models;
 
 namespace ChatBot.Anonymous.Domain.Repository
 {
     public class UsersRepository : IUser
     {
         private readonly BotDbContext _context;
+        private readonly BotConfiguration _configuration;
 
-        public UsersRepository(BotDbContext context)
+        public UsersRepository(BotDbContext context, IConfiguration configuration)
         {
             _context = context;
+            _configuration = configuration.GetMainConfigurationToObject();
         }
 
         public IQueryable<User> Get(int? limit = null, int? offset = null)
         {
             var users = _context.Users.Include(x => x.Action)
-                .Skip(offset ?? 0)
-                .Take(limit ?? 25);
+                .Skip(offset ?? _configuration.DefaultOffset)
+                .Take(limit ?? _configuration.DefaultLimit);
 
             return users;
         }

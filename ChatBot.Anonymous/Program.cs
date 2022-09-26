@@ -15,6 +15,7 @@ var botConfig = builder.Configuration.GetMainConfigurationToObject();
 var dbConfig = builder.Configuration.GetRequiredSection(ConfigurationHelper.GetNameSectionDatabaseConfiguration())["ConnectingString"];
 
 builder.Services.AddTransient<IUser, UsersRepository>();
+builder.Services.AddTransient<ISettings, SettingsRepository>();
 builder.Services.AddTransient<IAction, ActionsRepository>();
 builder.Services.AddTransient<RepositoryService>();
 
