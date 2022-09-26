@@ -87,13 +87,13 @@ namespace ChatBot.Anonymous.Commands.Actions
                 switch ((StartSteps?)user.Action.CurrentStep)
                 {
                     case StartSteps.GenderStep:
-                        await HandlingGenderStep(chatId: chatId);
+                        await ExecuteGenderStep(chatId: chatId);
                         break;
                     case StartSteps.AgeStep:
-                        await HandlingAgeStep(message.Chat.Id);
+                        await ExecuteAgeStep(message.Chat.Id);
                         break;
                     case StartSteps.ChatTypeStep:
-                        await HandlingChatTypeStep(message.Chat.Id);
+                        await ExecuteChatTypeStep(message.Chat.Id);
                         break;
                     default:
                         throw new ArgumentOutOfRangeException(nameof(user.Action.CurrentStep), "Current step is not valid");
@@ -138,7 +138,7 @@ namespace ChatBot.Anonymous.Commands.Actions
         }
         #endregion
 
-        #region Processing steps
+        #region Handling steps process
         private async Task HandlindMessage(Message message, Domain.Entities.User user)
         {
             if (user?.Action?.CurrentStep == null)
@@ -146,33 +146,31 @@ namespace ChatBot.Anonymous.Commands.Actions
                 throw new ArgumentNullException(nameof(user.Action.CurrentStep), "Action or Step is null");
             }
 
+            if (message == null)
+            {
+                throw new ArgumentNullException(nameof(message), "Message is null");
+            }
+
             var data = message.Text;
+
+            if (string.IsNullOrEmpty(data))
+            {
+                return;
+            }
+
             var userId = user.UserId;
 
             switch ((StartSteps)user.Action.CurrentStep)
             {
                 case StartSteps.AgeStep:
-                    var age = Convert.ToInt32(data);
-                    var minimumAge = _configuration.MinimumAge;
-                    var maximumAge = _configuration.MaximumAge;
-
-                    if (age > maximumAge || age < minimumAge)
-                    {
-                        await _botClient.SendTextMessageAsync(
-                            chatId: userId, 
-                            text: $"_Возраст не может быть меньше *{minimumAge}* или больше *{maximumAge}*_",
-                            parseMode: ParseMode.Markdown);
-                        return;
-                    }
-
-                    await _repositoryService.User.SaveUser(userId: user.UserId, age: age);
+                    await ProcessingAgeStep(data: data, userId: userId);
                     break;
                 default:
                     await ExecuteSteps(message, user);
                     return;
             }
 
-            await SetNextStep(user.UserId, message);
+            await SetNextStep(userId, message);
         }
 
         private async Task HandlingCallbackQuery(CallbackQuery callbackQuery, Domain.Entities.User user)
@@ -188,22 +186,21 @@ namespace ChatBot.Anonymous.Commands.Actions
             }
 
             var data = callbackQuery.Data;
+
+            if (string.IsNullOrEmpty(data))
+            {
+                return;
+            }
+
             var userId = user.UserId;
 
             switch ((StartSteps)user.Action.CurrentStep)
             {
                 case StartSteps.GenderStep:
-                    var gender = Convert.ToInt32(data);
-
-                    if (gender.IsNotOwnerValue(typeof(Gender)))
-                    {
-                        throw new ArgumentOutOfRangeException(nameof(gender), "Gender is null");
-                    }
-
-                    await _repositoryService.User.SaveUser(userId: userId, gender: gender);
+                    await ProcessingGenderStep(data: data, userId: userId);
                     break;
                 case StartSteps.ChatTypeStep:
-                    //
+                    await ProcessingChatTypeStep(data: data, userId: userId);
                     break;
                 default:
                     await ExecuteSteps(callbackQuery.Message, user);
@@ -226,7 +223,7 @@ namespace ChatBot.Anonymous.Commands.Actions
         #endregion
 
         #region Execute steps
-        private async Task HandlingGenderStep(long chatId)
+        private async Task ExecuteGenderStep(long chatId)
         {
             var keyboard = new InlineKeyboardMarkup(
                 new[]
@@ -242,7 +239,7 @@ namespace ChatBot.Anonymous.Commands.Actions
                 parseMode: ParseMode.Markdown, replyMarkup: keyboard);
         }
 
-        private async Task HandlingAgeStep(long chatId)
+        private async Task ExecuteAgeStep(long chatId)
         {
             var textMessage = new StringBuilder("Введите ваш возраст");
             await _botClient.SendTextMessageAsync(
@@ -251,7 +248,7 @@ namespace ChatBot.Anonymous.Commands.Actions
                 parseMode: ParseMode.Markdown);
         }
 
-        private async Task HandlingChatTypeStep(long chatId)
+        private async Task ExecuteChatTypeStep(long chatId)
         {
             var keyboard = new InlineKeyboardMarkup(
                 new[]
@@ -267,6 +264,43 @@ namespace ChatBot.Anonymous.Commands.Actions
                 chatId: chatId,
                 text: textMessage.ToString(),
                 parseMode: ParseMode.Markdown, replyMarkup: keyboard);
+        }
+        #endregion
+
+        #region Processing steps
+        private async Task ProcessingGenderStep(string data, long userId)
+        {
+            var gender = Convert.ToInt32(data);
+
+            if (gender.IsNotOwnerValue(typeof(Gender)))
+            {
+                throw new ArgumentOutOfRangeException(nameof(gender), "Gender is null");
+            }
+
+            await _repositoryService.User.SaveUser(userId: userId, gender: gender);
+        }
+
+        private async Task ProcessingAgeStep(string data, long userId)
+        {
+            var age = Convert.ToInt32(data);
+            var minimumAge = _configuration.MinimumAge;
+            var maximumAge = _configuration.MaximumAge;
+
+            if (age > maximumAge || age < minimumAge)
+            {
+                await _botClient.SendTextMessageAsync(
+                    chatId: userId,
+                    text: $"_Возраст не может быть меньше {minimumAge} или больше {maximumAge}_",
+                    parseMode: ParseMode.Markdown);
+                return;
+            }
+
+            await _repositoryService.User.SaveUser(userId: userId, age: age);
+        }
+
+        private async Task ProcessingChatTypeStep(string data, long userId)
+        {
+
         }
         #endregion
     }
