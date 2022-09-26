@@ -45,5 +45,13 @@ namespace ChatBot.Anonymous.Models.Interfaces
         /// <param name="user"> Пользователь </param>
         /// <returns></returns>
         Task ProcessingSteps(Update update, Domain.Entities.User user);
+
+        /// <summary>
+        /// Завершает выполнение текущего действия
+        /// </summary>
+        /// <param name="message"></param>
+        /// <param name="userId"> Уникальный идентификатор пользователя </param>
+        /// <returns></returns>
+        Task FinishAction(Message message, long userId);
     }
 }

@@ -138,6 +138,45 @@ namespace ChatBot.Anonymous.Commands.Actions
         }
         #endregion
 
+        public async Task FinishAction(Message message, long userId)
+        {
+            if (message == null)
+            {
+                throw new ArgumentNullException(nameof(message), "Message is null");
+            }
+
+            await _repositoryService.Action.SaveAction(userId: userId);
+            var user = await _repositoryService.User.GetById(userId: userId);
+
+            if (user == null)
+            {
+                throw new ArgumentNullException(nameof(user), "User is null");
+            }
+
+            var gender = (Gender?)user.Gender switch
+            {
+                Gender.Male => "мужской",
+                Gender.Female => "женский",
+                _ => "неизвестно"
+            };
+
+            var chatType = (CommunicationType?)user.UserSetting?.PreferredChatType switch
+            {
+                CommunicationType.Standart => "стандартный",
+                CommunicationType.OnlyVoice => "голосовые сообщения",
+                _ => "неизвестно"
+            };
+
+            var textMessage = new StringBuilder("Вы успешно заполнили необходимые поля!\n\n");
+            textMessage.Append($"Ваш пол: {gender}\n");
+            textMessage.Append($"Ваш возраст: {user.Age}\n");
+            textMessage.Append($"Предпочитаемый тип чата: {chatType}\n");
+            await _botClient.SendTextMessageAsync(
+                chatId: userId, 
+                text: textMessage.ToString(), 
+                parseMode: ParseMode.Markdown);
+        }
+
         #region Handling steps process
         private async Task HandlindMessage(Message message, Domain.Entities.User user)
         {
@@ -201,7 +240,8 @@ namespace ChatBot.Anonymous.Commands.Actions
                     break;
                 case StartSteps.ChatTypeStep:
                     await ProcessingChatTypeStep(data: data, userId: userId);
-                    break;
+                    await FinishAction(message: callbackQuery.Message, userId: userId);
+                    return;
                 default:
                     await ExecuteSteps(callbackQuery.Message, user);
                     return;

@@ -21,7 +21,9 @@ namespace ChatBot.Anonymous.Domain.Repository
 
         public IQueryable<User> Get(int? limit = null, int? offset = null)
         {
-            var users = _context.Users.Include(x => x.Action)
+            var users = _context.Users
+                .Include(x => x.Action)
+                .Include(x => x.UserSetting)
                 .Skip(offset ?? _configuration.DefaultOffset)
                 .Take(limit ?? _configuration.DefaultLimit);
 

@@ -57,6 +57,7 @@ namespace ChatBot.Anonymous.Domain.Repository
             {
                 action.CurrentAction = actionId;
                 action.CurrentStep = actionStep;
+                action.LastUpdate = DateTime.Now;
 
                 _context.Actions.Update(action);
             }
