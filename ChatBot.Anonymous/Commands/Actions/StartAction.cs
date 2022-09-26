@@ -1,0 +1,273 @@
+﻿using ChatBot.Anonymous.Common.Enums;
+using ChatBot.Anonymous.Common.Enums.ActionSteps;
+using ChatBot.Anonymous.Common.Helpers;
+using ChatBot.Anonymous.Models;
+using ChatBot.Anonymous.Models.Interfaces;
+using ChatBot.Anonymous.Services;
+using System.Text;
+using Telegram.Bot;
+using Telegram.Bot.Types;
+using Telegram.Bot.Types.Enums;
+using Telegram.Bot.Types.ReplyMarkups;
+
+namespace ChatBot.Anonymous.Commands.Actions
+{
+    public class StartAction : IActionSteps
+    {
+        private readonly ITelegramBotClient _botClient;
+        private readonly BotConfiguration _configuration;
+        private readonly RepositoryService _repositoryService;
+
+        public CommandActions Action { get; }
+
+        public StartAction(ITelegramBotClient botClient, RepositoryService repositoryService, IConfiguration configuration)
+        {
+            Action = CommandActions.StartAction;
+
+            _botClient = botClient;
+            _repositoryService = repositoryService;
+            _configuration = configuration.GetMainConfigurationToObject();
+        }
+
+        #region Get steps
+        public int GetDefaultStep()
+        {
+            return (int)StartSteps.GenderStep;
+        }
+
+        public int? GetNextStep(int? currentStep)
+        {
+            if (currentStep.IsNotOwnerValue(typeof(StartSteps)))
+            {
+                return null;
+            }
+
+            return (StartSteps?)currentStep switch
+            {
+                StartSteps.GenderStep => (int)StartSteps.AgeStep,
+                StartSteps.AgeStep => (int)StartSteps.ChatTypeStep,
+                _ => null,
+            };
+        }
+
+        public int? GetPreviousStep(int? currentStep)
+        {
+            if (currentStep.IsNotOwnerValue(typeof(StartSteps)))
+            {
+                return null;
+            }
+
+            return (StartSteps?)currentStep switch
+            {
+                StartSteps.AgeStep => (int)StartSteps.GenderStep,
+                StartSteps.ChatTypeStep => (int)StartSteps.AgeStep,
+                _ => null,
+            };
+        }
+        #endregion
+
+        #region Execute/Processing steps
+        public async Task ExecuteSteps(Message message, Domain.Entities.User user)
+        {
+            if (user.Action == null)
+            {
+                throw new ArgumentNullException(nameof(user.Action), "Action is null");
+            }
+
+            if (user.Action.CurrentStep.IsNotOwnerValue(typeof(StartSteps)))
+            {
+                user.Action.CurrentStep ??= GetDefaultStep();
+            }
+
+            var chatId = message.Chat.Id;
+            var messageId = message.MessageId;
+
+            try
+            {
+                switch ((StartSteps?)user.Action.CurrentStep)
+                {
+                    case StartSteps.GenderStep:
+                        await HandlingGenderStep(chatId: chatId);
+                        break;
+                    case StartSteps.AgeStep:
+                        await HandlingAgeStep(message.Chat.Id);
+                        break;
+                    case StartSteps.ChatTypeStep:
+                        await HandlingChatTypeStep(message.Chat.Id);
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException(nameof(user.Action.CurrentStep), "Current step is not valid");
+                }
+
+                await _repositoryService.Action.SaveAction(user.UserId, (int)Action, user.Action.CurrentStep);
+            }
+            catch
+            {
+            }
+        }
+
+        public async Task ProcessingSteps(Update update, Domain.Entities.User user)
+        {
+            if (user.Action == null)
+            {
+                throw new ArgumentNullException(nameof(user.Action), "Action is null");
+            }
+
+            if (user.Action.CurrentStep.IsNotOwnerValue(typeof(StartSteps)))
+            {
+                throw new ArgumentOutOfRangeException(nameof(user.Action.CurrentStep), "Current step is not valid");
+            }
+
+            try
+            {
+                switch (update.Type)
+                {
+                    case UpdateType.Message:
+                        await HandlindMessage(update.Message!, user);
+                        break;
+                    case UpdateType.CallbackQuery:
+                        await HandlingCallbackQuery(update.CallbackQuery!, user);
+                        break;
+                    default:
+                        return;
+                }
+            }
+            catch
+            {
+            }
+        }
+        #endregion
+
+        #region Processing steps
+        private async Task HandlindMessage(Message message, Domain.Entities.User user)
+        {
+            if (user?.Action?.CurrentStep == null)
+            {
+                throw new ArgumentNullException(nameof(user.Action.CurrentStep), "Action or Step is null");
+            }
+
+            var data = message.Text;
+            var userId = user.UserId;
+
+            switch ((StartSteps)user.Action.CurrentStep)
+            {
+                case StartSteps.AgeStep:
+                    var age = Convert.ToInt32(data);
+                    var minimumAge = _configuration.MinimumAge;
+                    var maximumAge = _configuration.MaximumAge;
+
+                    if (age > maximumAge || age < minimumAge)
+                    {
+                        await _botClient.SendTextMessageAsync(
+                            chatId: userId, 
+                            text: $"_Возраст не может быть меньше *{minimumAge}* или больше *{maximumAge}*_",
+                            parseMode: ParseMode.Markdown);
+                        return;
+                    }
+
+                    await _repositoryService.User.SaveUser(userId: user.UserId, age: age);
+                    break;
+                default:
+                    await ExecuteSteps(message, user);
+                    return;
+            }
+
+            await SetNextStep(user.UserId, message);
+        }
+
+        private async Task HandlingCallbackQuery(CallbackQuery callbackQuery, Domain.Entities.User user)
+        {
+            if (user?.Action?.CurrentStep == null)
+            {
+                throw new ArgumentNullException(nameof(user.Action.CurrentStep), "Action or Step is null");
+            }
+
+            if (callbackQuery.Message == null)
+            {
+                throw new ArgumentNullException(nameof(callbackQuery.Message), "Message is null");
+            }
+
+            var data = callbackQuery.Data;
+            var userId = user.UserId;
+
+            switch ((StartSteps)user.Action.CurrentStep)
+            {
+                case StartSteps.GenderStep:
+                    var gender = Convert.ToInt32(data);
+
+                    if (gender.IsNotOwnerValue(typeof(Gender)))
+                    {
+                        throw new ArgumentOutOfRangeException(nameof(gender), "Gender is null");
+                    }
+
+                    await _repositoryService.User.SaveUser(userId: userId, gender: gender);
+                    break;
+                case StartSteps.ChatTypeStep:
+                    //
+                    break;
+                default:
+                    await ExecuteSteps(callbackQuery.Message, user);
+                    return;
+            }
+
+            await SetNextStep(userId, callbackQuery.Message);
+        }
+
+        private async Task SetNextStep(long userId, Message message)
+        {
+            var user = await _repositoryService.User.GetById(userId: userId);
+
+            if (user != null && user.Action != null)
+            {
+                user.Action.CurrentStep = GetNextStep(user.Action.CurrentStep);
+                await ExecuteSteps(message, user);
+            }
+        }
+        #endregion
+
+        #region Execute steps
+        private async Task HandlingGenderStep(long chatId)
+        {
+            var keyboard = new InlineKeyboardMarkup(
+                new[]
+                {
+                    InlineKeyboardButton.WithCallbackData("мужской ♂", Gender.Male.ToString("d")),
+                    InlineKeyboardButton.WithCallbackData("женский ♀‍", Gender.Female.ToString("d"))
+                });
+
+            var textMessage = new StringBuilder("Выберите ваш пол");
+            await _botClient.SendTextMessageAsync(
+                chatId: chatId,
+                text: textMessage.ToString(),
+                parseMode: ParseMode.Markdown, replyMarkup: keyboard);
+        }
+
+        private async Task HandlingAgeStep(long chatId)
+        {
+            var textMessage = new StringBuilder("Введите ваш возраст");
+            await _botClient.SendTextMessageAsync(
+                chatId: chatId,
+                text: textMessage.ToString(),
+                parseMode: ParseMode.Markdown);
+        }
+
+        private async Task HandlingChatTypeStep(long chatId)
+        {
+            var keyboard = new InlineKeyboardMarkup(
+                new[]
+                {
+                    InlineKeyboardButton.WithCallbackData("обычный 📨", CommunicationType.Standart.ToString("d")),
+                    InlineKeyboardButton.WithCallbackData("голосовые сообщения 🎤", CommunicationType.OnlyVoice.ToString("d"))
+                });
+
+            var textMessage = new StringBuilder("Выберите предпочитаемый тип чата\n\n");
+            textMessage.Append("1. *обычный* - стандартный привычный чат, с возможностью обмена любыми типами сообщений\n");
+            textMessage.Append("2. *голосовые сообщений* - возможность отправлять только голосовые сообщения");
+            await _botClient.SendTextMessageAsync(
+                chatId: chatId,
+                text: textMessage.ToString(),
+                parseMode: ParseMode.Markdown, replyMarkup: keyboard);
+        }
+        #endregion
+    }
+}

@@ -20,6 +20,6 @@ namespace ChatBot.Anonymous.Models.Interfaces
         /// </summary>
         /// <param name="message"></param>
         /// <returns></returns>
-        Task Execute(Message message);
+        Task Execute(Update update);
     }
 }

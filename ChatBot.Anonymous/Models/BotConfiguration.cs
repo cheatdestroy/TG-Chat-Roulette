@@ -19,5 +19,15 @@
         /// Токен бота
         /// </summary>
         public string Token { get; set; } = default!;
+
+        /// <summary>
+        /// Максимально возможный возраст для общения
+        /// </summary>
+        public uint MaximumAge { get; set; }
+
+        /// <summary>
+        /// Минимально возможный возраст для общения
+        /// </summary>
+        public uint MinimumAge { get; set; }
     }
 }

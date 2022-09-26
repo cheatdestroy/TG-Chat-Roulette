@@ -17,17 +17,26 @@ namespace ChatBot.Anonymous.Controllers
             _serviceCommand = serviceCommand;
         }
 
+        /// <summary>
+        /// Получает обновления от телеграм бота
+        /// </summary>
+        /// <param name="update"></param>
+        /// <returns></returns>
         [HttpPost("update")]
         public async Task<ActionResult> Update([FromBody] Update update)
         {
-            var message = update.Message;
-
-            if (message != null)
-            {
-                await _serviceCommand.SearchAndExecuteCommand(message);
-            }
-
+            await _serviceCommand.SearchAndExecuteCommand(update);
             return Ok();
+        }
+
+        /// <summary>
+        /// Временная фича для пробуждения приложения
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("hc")]
+        public string HealthCheck()
+        {
+            return "Server available";
         }
     }
 }

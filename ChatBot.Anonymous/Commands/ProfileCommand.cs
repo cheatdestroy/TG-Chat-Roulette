@@ -10,27 +10,19 @@ namespace ChatBot.Anonymous.Commands
     /// </summary>
     public class ProfileCommand : ICommandBase
     {
-        private readonly ITelegramBotClient _botClient;
-
         public string Name => "Профиль";
-
         public List<string> Triggers { get; set; }
 
-        public ProfileCommand(ITelegramBotClient botClient)
+        public ProfileCommand()
         {
             Triggers = new List<string>
             {
                 "/profile"
             };
-
-            _botClient = botClient;
         }
 
-        public async Task Execute(Message message)
+        public async Task Execute(Update update)
         {
-            var (_, chatId, messageId, text) = CommandHelper.GetRequiredParams(message);
-
-            await _botClient.SendTextMessageAsync(chatId, Name, replyToMessageId: messageId);
         }
     }
 }

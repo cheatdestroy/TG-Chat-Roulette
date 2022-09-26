@@ -7,7 +7,7 @@ namespace ChatBot.Anonymous.Models.Interfaces
         /// <summary>
         /// Поиск команды по отправленному сообщению и её последующий вызов
         /// </summary>
-        /// <param name="message"></param>
-        Task SearchAndExecuteCommand(Message message);
+        /// <param name="update"></param>
+        Task SearchAndExecuteCommand(Update update);
     }
 }

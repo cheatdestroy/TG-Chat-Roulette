@@ -17,6 +17,7 @@ namespace ChatBot.Anonymous.Domain.Entities
         public DateTime CreatedAt { get; set; }
 
         public virtual UserSetting? UserSetting { get; set; }
+        public virtual ActionData? Action { get; set; }
         public virtual ICollection<ChatRoom> ChatRoomFirstUsers { get; set; }
         public virtual ICollection<ChatRoom> ChatRoomSecondUsers { get; set; }
     }

@@ -17,7 +17,8 @@ namespace ChatBot.Anonymous.Domain.Repository
 
         public IQueryable<User> Get(int? limit = null, int? offset = null)
         {
-            var users = _context.Users.Skip(offset ?? 0)
+            var users = _context.Users.Include(x => x.Action)
+                .Skip(offset ?? 0)
                 .Take(limit ?? 25);
 
             return users;
@@ -30,14 +31,48 @@ namespace ChatBot.Anonymous.Domain.Repository
             return user;
         }
 
-        public async Task<User> SaveUser(long userId)
+        public async Task<User> SaveUser(
+            long userId,
+            int? gender = null,
+            int? age = null)
         {
-            var user = new User()
-            {
-                UserId = userId,
-            };
+            var user = await GetById(userId);
 
-            _context.Users.Add(user);
+            if (user == null)
+            {
+                user = new User()
+                {
+                    UserId = userId,
+                    Gender = (int?)gender,
+                    Age = age,
+                    UserSetting = new UserSetting()
+                    {
+                        UserId = userId,
+                    },
+                    Action = new ActionData()
+                    {
+                        UserId = userId,
+                        ChatId = userId,
+                    },
+                };
+
+                _context.Users.Add(user);
+            }
+            else
+            {
+                if (gender.HasValue)
+                {
+                    user.Gender = gender;
+                }
+
+                if (age.HasValue)
+                {
+                    user.Age = age;
+                }
+
+                _context.Users.Update(user);
+            }
+
             await _context.SaveChangesAsync();
 
             return user;

@@ -1,4 +1,5 @@
-﻿using ChatBot.Anonymous.Models;
+﻿using ChatBot.Anonymous.Common.Helpers;
+using ChatBot.Anonymous.Models;
 using Telegram.Bot;
 using Telegram.Bot.Types.Enums;
 
@@ -15,7 +16,7 @@ namespace ChatBot.Anonymous.Services
         public ConfigureWebHook(IServiceProvider serviceProvider, IConfiguration configuration)
         {
             _serviceProvider = serviceProvider;
-            _botConfiguration = configuration.GetRequiredSection("BotConfiguration").Get<BotConfiguration>();
+            _botConfiguration = configuration.GetMainConfigurationToObject();
         }
 
         public async Task StartAsync(CancellationToken cancellationToken)

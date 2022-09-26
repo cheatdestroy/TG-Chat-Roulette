@@ -17,19 +17,15 @@ namespace ChatBot.Anonymous.Domain.Context
         public virtual DbSet<ChatRoom> ChatRooms { get; set; } = null!;
         public virtual DbSet<User> Users { get; set; } = null!;
         public virtual DbSet<UserSetting> UserSettings { get; set; } = null!;
+        public virtual DbSet<ActionData> Actions { get; set; } = null!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            //modelBuilder.HasDefaultSchema("");
-
             modelBuilder.Entity<ChatRoom>(entity =>
             {
-                entity.HasKey(e => new { e.Id, e.FirstUserId, e.SecondUserId })
-                    .HasName("PK__ChatRoom__CC30F18F15B0B3C6");
+                entity.HasKey(e => new { e.Id, e.FirstUserId, e.SecondUserId });
 
                 entity.Property(e => e.Id).HasDefaultValueSql("(newid())");
-
-                entity.Property(e => e.EndDate).HasColumnType("datetime");
 
                 entity.Property(e => e.NumberMessagesFirstUser).HasColumnName("NumberMessagesFirstUser");
                 entity.Property(e => e.NumberMessagesSecondUser).HasColumnName("NumberMessagesSecondUser");
@@ -38,17 +34,17 @@ namespace ChatBot.Anonymous.Domain.Context
                     .HasColumnType("datetime")
                     .HasDefaultValueSql("(getdate())");
 
+                entity.Property(e => e.EndDate).HasColumnType("datetime");
+
                 entity.HasOne(d => d.FirstUser)
                     .WithMany(p => p.ChatRoomFirstUsers)
                     .HasForeignKey(d => d.FirstUserId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__ChatRooms__First__5BE2A6F2");
+                    .OnDelete(DeleteBehavior.ClientSetNull);
 
                 entity.HasOne(d => d.SecondUser)
                     .WithMany(p => p.ChatRoomSecondUsers)
                     .HasForeignKey(d => d.SecondUserId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__ChatRooms__Secon__5CD6CB2B");
+                    .OnDelete(DeleteBehavior.ClientSetNull);
             });
 
             modelBuilder.Entity<User>(entity =>
@@ -62,16 +58,32 @@ namespace ChatBot.Anonymous.Domain.Context
 
             modelBuilder.Entity<UserSetting>(entity =>
             {
-                entity.HasKey(e => e.UserId)
-                    .HasName("PK__UserSett__1788CC4C3F92F6DF");
+                entity.HasKey(e => e.UserId);
 
                 entity.Property(e => e.UserId).ValueGeneratedNever();
 
                 entity.HasOne(d => d.User)
                     .WithOne(p => p.UserSetting)
                     .HasForeignKey<UserSetting>(d => d.UserId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__UserSetti__UserI__5AEE82B9");
+                    .OnDelete(DeleteBehavior.ClientSetNull);
+            });
+
+            modelBuilder.Entity<ActionData>(entity =>
+            {
+                entity.ToTable("ActionData");
+
+                entity.HasKey(e => new { e.UserId, e.ChatId });
+
+                entity.Property(e => e.UserId).ValueGeneratedNever();
+
+                entity.Property(e => e.LastUpdate)
+                    .HasColumnType("datetime")
+                    .HasDefaultValueSql("(getdate())");
+
+                entity.HasOne(d => d.User)
+                    .WithOne(p => p.Action)
+                    .HasForeignKey<ActionData>(d => d.UserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull);
             });
 
             OnModelCreatingPartial(modelBuilder);

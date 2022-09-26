@@ -1,4 +1,5 @@
-﻿using ChatBot.Anonymous.Domain.Entities;
+﻿using ChatBot.Anonymous.Common.Enums;
+using ChatBot.Anonymous.Domain.Entities;
 
 namespace ChatBot.Anonymous.Domain.Repository.Interfaces
 {
@@ -9,7 +10,10 @@ namespace ChatBot.Anonymous.Domain.Repository.Interfaces
         /// </summary>
         /// <param name="userId"> Уникальный идентификатор </param>
         /// <returns></returns>
-        Task<User> SaveUser(long userId);
+        Task<User> SaveUser(
+            long userId,
+            int? gender = null,
+            int? age = null);
 
         /// <summary>
         /// Получает пользователя по уникальному идентификатору
