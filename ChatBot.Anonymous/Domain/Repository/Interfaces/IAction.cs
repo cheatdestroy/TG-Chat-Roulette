@@ -14,7 +14,7 @@ namespace ChatBot.Anonymous.Domain.Repository.Interfaces
         Task<ActionData> SaveAction(
             long userId, 
             int? actionId = null, 
-            int? actionStep = null);
+            int? stepId = null);
 
         /// <summary>
         /// Получает прогресс действий пользователя по уникальному идентификатору пользователя

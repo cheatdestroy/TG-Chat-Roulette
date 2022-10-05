@@ -6,7 +6,7 @@
     public enum CommandActions
     {
         /// <summary>
-        /// Действие инициализации при вводе команды /start
+        /// Инициализации при вводе команды /start
         /// </summary>
         StartAction = 100,
     }

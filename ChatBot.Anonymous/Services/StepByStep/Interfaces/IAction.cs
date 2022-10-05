@@ -1,34 +1,19 @@
 ﻿using ChatBot.Anonymous.Common.Enums;
 using Telegram.Bot.Types;
 
-namespace ChatBot.Anonymous.Models.Interfaces
+namespace ChatBot.Anonymous.Services.StepByStep.Interfaces
 {
-    public interface IActionSteps
+    public interface IAction
     {
         /// <summary>
-        /// Номер действия
+        /// Идентификатор действия
         /// </summary>
         CommandActions Action { get; }
 
         /// <summary>
-        /// Получает следующий шаг
+        /// Шаги действия
         /// </summary>
-        /// <param name="currentStep"> Текущий шаг </param>
-        /// <returns> Возвращает следующий шаг </returns>
-        int? GetNextStep(int? currentStep);
-
-        /// <summary>
-        /// Получает предыдущий шаг
-        /// </summary>
-        /// <param name="currentStep"> Текущий шаг </param>
-        /// <returns> Возвращает предыдущий шаг </returns>
-        int? GetPreviousStep(int? currentStep);
-
-        /// <summary>
-        /// Получает стандартный шаг в случае отсутствия шага
-        /// </summary>
-        /// <returns> Возвращает стандартный шаг </returns>
-        int GetDefaultStep();
+        IActionSteps Steps { get; }
 
         /// <summary>
         /// Вызывает пошаговую инициализацию

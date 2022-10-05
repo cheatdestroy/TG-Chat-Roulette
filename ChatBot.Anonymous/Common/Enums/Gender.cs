@@ -1,4 +1,6 @@
-﻿namespace ChatBot.Anonymous.Common.Enums
+﻿using System.ComponentModel;
+
+namespace ChatBot.Anonymous.Common.Enums
 {
     /// <summary>
     /// Пол пользователя
@@ -6,18 +8,21 @@
     public enum Gender
     {
         /// <summary>
-        /// Неизвестно
-        /// </summary>
-        Unknown = 0,
-
-        /// <summary>
         /// Мужчина
         /// </summary>
+        [Description("мужской")]
         Male = 1,
 
         /// <summary>
         /// Женщина
         /// </summary>
-        Female = 2
+        [Description("женский")]
+        Female = 2,
+
+        /// <summary>
+        /// Любой
+        /// </summary>
+        [Description("любой")]
+        Any = 3
     }
 }

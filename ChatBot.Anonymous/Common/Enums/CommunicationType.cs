@@ -1,4 +1,6 @@
-﻿namespace ChatBot.Anonymous.Common.Enums
+﻿using System.ComponentModel;
+
+namespace ChatBot.Anonymous.Common.Enums
 {
     /// <summary>
     /// Тип общения
@@ -6,18 +8,15 @@
     public enum CommunicationType
     {
         /// <summary>
-        /// Неизвестно
-        /// </summary>
-        Unknown = 0,
-
-        /// <summary>
         /// Обычное
         /// </summary>
+        [Description("обычный")]
         Standart = 1,
 
         /// <summary>
         /// Только голосовые сообщения
         /// </summary>
+        [Description("голосовые сообщения")]
         OnlyVoice = 2
     }
 }

@@ -12,19 +12,17 @@ namespace ChatBot.Anonymous.Services
     public class CommandService : ICommandService
     {
         private readonly IServiceProvider _serviceProvider;
-        private readonly IActionService _actionService;
 
-        public CommandService(IServiceProvider serviceProvider, IActionService actionService)
+        public CommandService(IServiceProvider serviceProvider)
         {
             _serviceProvider = serviceProvider;
-            _actionService = actionService;
         }
 
         /// <summary>
         /// Поиск команды по отправленному сообщению и её последующий вызов
         /// </summary>
         /// <param name="update"></param>
-        public async Task SearchAndExecuteCommand(Update update)
+        public async Task<bool> ExecuteCommand(Update update)
         {
             using var scope = _serviceProvider.CreateAsyncScope();
             var commands = scope.ServiceProvider.GetServices<ICommandBase>();
@@ -38,10 +36,8 @@ namespace ChatBot.Anonymous.Services
             {
                 await command.Execute(update: update);
             }
-            else
-            {
-                await _actionService.ExecuteAction(update: update);
-            }
+
+            return command != null;
         }
     }
 }

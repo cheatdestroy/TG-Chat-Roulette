@@ -33,11 +33,11 @@
         /// <summary>
         /// Максимально возможный возраст для общения
         /// </summary>
-        public uint MaximumAge { get; set; }
+        public int MaximumAge { get; set; }
 
         /// <summary>
         /// Минимально возможный возраст для общения
         /// </summary>
-        public uint MinimumAge { get; set; }
+        public int MinimumAge { get; set; }
     }
 }

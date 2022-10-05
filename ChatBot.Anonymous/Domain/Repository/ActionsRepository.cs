@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ChatBot.Anonymous.Domain.Repository
 {
-    public class ActionsRepository : IAction
+    public class ActionsRepository : Repository.Interfaces.IAction
     {
         private readonly BotDbContext _context;
         private readonly BotConfiguration _configuration;
@@ -37,7 +37,7 @@ namespace ChatBot.Anonymous.Domain.Repository
         public async Task<ActionData> SaveAction(
             long userId, 
             int? actionId = null, 
-            int? actionStep = null)
+            int? stepId = null)
         {
             var action = await GetByUserId(userId: userId);
 
@@ -48,7 +48,7 @@ namespace ChatBot.Anonymous.Domain.Repository
                     UserId = userId,
                     ChatId = userId,
                     CurrentAction = actionId,
-                    CurrentStep = actionStep
+                    CurrentStep = stepId
                 };
 
                 _context.Actions.Add(action);
@@ -56,7 +56,7 @@ namespace ChatBot.Anonymous.Domain.Repository
             else
             {
                 action.CurrentAction = actionId;
-                action.CurrentStep = actionStep;
+                action.CurrentStep = stepId;
                 action.LastUpdate = DateTime.Now;
 
                 _context.Actions.Update(action);

@@ -1,9 +1,7 @@
-﻿
-using ChatBot.Anonymous;
-using ChatBot.Anonymous.Common.Enums;
+﻿using ChatBot.Anonymous.Common.Enums;
 using Telegram.Bot.Types;
 
-namespace ChatBot.Anonymous.Models.Interfaces
+namespace ChatBot.Anonymous.Services.StepByStep.Interfaces
 {
     public interface IActionService
     {

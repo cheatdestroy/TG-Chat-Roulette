@@ -1,11 +1,11 @@
 ﻿using ChatBot.Anonymous.Common.Enums;
 using ChatBot.Anonymous.Common.Helpers;
 using ChatBot.Anonymous.Domain.Repository.Interfaces;
-using ChatBot.Anonymous.Models.Interfaces;
+using ChatBot.Anonymous.Services.StepByStep.Interfaces;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 
-namespace ChatBot.Anonymous.Services
+namespace ChatBot.Anonymous.Services.StepByStep
 {
     /// <summary>
     /// Сервис step-by-step
@@ -20,7 +20,7 @@ namespace ChatBot.Anonymous.Services
         }
 
         /// <summary>
-        /// Обрабатывает шаги указанного или сохраненного действия
+        /// Обрабатывает шаги указанного/сохраненного действия
         /// </summary>
         /// <param name="update"></param>
         /// <param name="action"> Номер действия </param>
@@ -40,14 +40,14 @@ namespace ChatBot.Anonymous.Services
             }
 
             using var scope = _serviceProvider.CreateAsyncScope();
-            var repositoryServices = scope.ServiceProvider.GetRequiredService<RepositoryService>();
+            var repositoryService = scope.ServiceProvider.GetRequiredService<RepositoryService>();
 
-            var user = await repositoryServices.User.GetById(userId: userId.Value) 
-                ?? await repositoryServices.User.SaveUser(userId: userId.Value); ;
+            var user = await repositoryService.User.GetById(userId: userId.Value)
+                ?? await repositoryService.User.SaveUser(userId: userId.Value);
 
             if (action.HasValue)
             {
-                user.Action = await repositoryServices.Action.SaveAction(userId: userId.Value, actionId: (int?)action);
+                user.Action = await repositoryService.Action.SaveAction(userId: userId.Value, actionId: (int?)action);
             }
 
             if (user?.Action?.CurrentAction == null)
@@ -55,15 +55,15 @@ namespace ChatBot.Anonymous.Services
                 return;
             }
 
-            var actionId = user.Action.CurrentAction.Value;
+            var actionId = user.Action.CurrentAction.ToEnum<CommandActions>();
 
-            if (actionId.IsNotOwnerValue(typeof(CommandActions)))
+            if (!actionId.HasValue)
             {
                 return;
             }
 
-            var actions = scope.ServiceProvider.GetServices<IActionSteps>();
-            var commandAction = actions.FirstOrDefault(x => x.Action == (CommandActions)actionId);
+            var actions = scope.ServiceProvider.GetServices<Interfaces.IAction>();
+            var commandAction = actions.FirstOrDefault(x => x.Action == actionId);
 
             if (commandAction != null)
             {
@@ -71,11 +71,11 @@ namespace ChatBot.Anonymous.Services
                 {
                     if (user.Action.CurrentStep.HasValue)
                     {
-                        await commandAction.ProcessingSteps(update, user);
+                        await commandAction.ProcessingSteps(update: update, user: user);
                     }
                     else if (update.Message != null)
                     {
-                        await commandAction.ExecuteSteps(update.Message, user);
+                        await commandAction.ExecuteSteps(message: update.Message, user: user);
                     }
                 }
                 catch

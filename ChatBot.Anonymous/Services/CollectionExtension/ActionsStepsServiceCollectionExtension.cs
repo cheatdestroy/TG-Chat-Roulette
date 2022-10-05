@@ -1,5 +1,6 @@
-﻿using ChatBot.Anonymous.Models.Interfaces;
-using ChatBot.Anonymous.Common.Enums;
+﻿using ChatBot.Anonymous.Common.Enums;
+using ChatBot.Anonymous.Models;
+using ChatBot.Anonymous.Services.StepByStep.Interfaces;
 
 namespace ChatBot.Anonymous.Services.CollectionExtension
 {
@@ -9,36 +10,71 @@ namespace ChatBot.Anonymous.Services.CollectionExtension
     public static class ActionsStepsServiceCollectionExtension
     {
         /// <summary>
-        /// Добавляет сервис действий в контейнер DI
+        /// Добавляет сервис действий (step-by-step) в контейнер DI
         /// </summary>
-        /// <typeparam name="T"> Сервис действий </typeparam>
+        /// <typeparam name="TActionService"> Сервис действий </typeparam>
         /// <param name="services"> Контейнер </param>
         /// <returns></returns>
-        public static IServiceCollection AddActionService<T>(this IServiceCollection services) 
-            where T : class, IActionService
+        public static IServiceCollection AddActionService<TActionService>(this IServiceCollection services) 
+            where TActionService : class, IActionService
         {
-            services.AddSingleton<IActionService, T>();
+            services.AddSingleton<IActionService, TActionService>();
 
             return services;
         }
 
         /// <summary>
-        /// Добавляет действия в контейнер DI
+        /// Добавляет действие в контейнер DI
         /// </summary>
-        /// <typeparam name="T"> Действие </typeparam>
+        /// <typeparam name="TAction"> Действие </typeparam>
         /// <param name="services"> Контейнер </param>
         /// <returns></returns>
-        public static IServiceCollection AddAction<T>(this IServiceCollection services)
-            where T : class, IActionSteps
+        public static IServiceCollection AddAction<TAction>(this IServiceCollection services)
+            where TAction : class, IAction
         {
-            var action = services.FirstOrDefault(x => x.ImplementationType == typeof(T));
+            var action = services.FirstOrDefault(x => x.ImplementationType == typeof(TAction));
 
             if (action != null)
             {
                 services.Remove(action);
             }
 
-            services.AddTransient<IActionSteps, T>();
+            services.AddTransient<IAction, TAction>();
+
+            return services;
+        }
+
+        /// <summary>
+        /// Добавляет шаг в контейнер DI
+        /// </summary>
+        /// <typeparam name="TStep"> Шаг </typeparam>
+        /// <param name="services"> Контейнер </param>
+        /// <returns></returns>
+        public static IServiceCollection AddStep<TStep>(this IServiceCollection services)
+            where TStep : class, IStep
+        {
+            var step = services.FirstOrDefault(x => x.ImplementationType == typeof(TStep));
+
+            if (step != null)
+            {
+                services.Remove(step);
+            }
+
+            services.AddTransient<TStep>();
+
+            return services;
+        }
+
+        /// <summary>
+        /// Добавляет последовательность шагов в контейнер DI
+        /// </summary>
+        /// <typeparam name="TActionSteps"> Последовательность шагов </typeparam>
+        /// <param name="services"> Контейнер </param>
+        /// <returns></returns>
+        public static IServiceCollection AddActionSteps<TActionSteps>(this IServiceCollection services)
+            where TActionSteps : class, IActionSteps
+        {
+            services.AddTransient<TActionSteps>();
 
             return services;
         }
