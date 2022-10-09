@@ -10,6 +10,7 @@ namespace ChatBot.Anonymous.Services.StepByStep.Actions
 {
     public class StartAction<T> : IAction where T : class, IActionSteps
     {
+        private readonly ILogger<StartAction<T>> _logger;
         private readonly ITelegramBotClient _botClient;
         private readonly RepositoryService _repositoryService;
 
@@ -17,6 +18,7 @@ namespace ChatBot.Anonymous.Services.StepByStep.Actions
         public IActionSteps Steps { get; }
 
         public StartAction(
+            ILogger<StartAction<T>> logger,
             ITelegramBotClient botClient,
             RepositoryService repositoryService,
             T actionSteps)
@@ -24,6 +26,7 @@ namespace ChatBot.Anonymous.Services.StepByStep.Actions
             Action = CommandActions.StartAction;
             Steps = actionSteps;
 
+            _logger = logger;
             _botClient = botClient;
             _repositoryService = repositoryService;
         }
@@ -48,8 +51,9 @@ namespace ChatBot.Anonymous.Services.StepByStep.Actions
                     await _repositoryService.Action.SaveAction(userId: user.UserId, actionId: (int)Action, stepId: (int)currentStep);
                 }
             }
-            catch
+            catch (Exception ex)
             {
+                _logger.LogError(ex, "Problem with executing step");
                 throw;
             }
         }
@@ -89,8 +93,9 @@ namespace ChatBot.Anonymous.Services.StepByStep.Actions
                 await currentStepData.Processing(data: data, userId: userId);
                 await SetNextStep(userId, message);
             }
-            catch
+            catch (Exception ex)
             {
+                _logger.LogError(ex, "Problem with processing step");
                 throw;
             }
 

@@ -1,9 +1,9 @@
 ﻿using ChatBot.Anonymous.Common.Enums;
 using ChatBot.Anonymous.Common.Helpers;
-using ChatBot.Anonymous.Domain.Repository.Interfaces;
 using ChatBot.Anonymous.Services.StepByStep.Interfaces;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
+using IAction = ChatBot.Anonymous.Services.StepByStep.Interfaces.IAction;
 
 namespace ChatBot.Anonymous.Services.StepByStep
 {
@@ -12,10 +12,12 @@ namespace ChatBot.Anonymous.Services.StepByStep
     /// </summary>
     public class ActionService : IActionService
     {
+        private readonly ILogger<ActionService> _logger;
         private readonly IServiceProvider _serviceProvider;
 
-        public ActionService(IServiceProvider serviceProvider)
+        public ActionService(ILogger<ActionService> logger, IServiceProvider serviceProvider)
         {
+            _logger = logger;
             _serviceProvider = serviceProvider;
         }
 
@@ -36,6 +38,7 @@ namespace ChatBot.Anonymous.Services.StepByStep
 
             if (userId == null)
             {
+                _logger.LogWarning("UserId is null");
                 return;
             }
 
@@ -52,6 +55,7 @@ namespace ChatBot.Anonymous.Services.StepByStep
 
             if (user?.Action?.CurrentAction == null)
             {
+                _logger.LogWarning("User current action after saving is null");
                 return;
             }
 
@@ -59,10 +63,11 @@ namespace ChatBot.Anonymous.Services.StepByStep
 
             if (!actionId.HasValue)
             {
+                _logger.LogWarning("User current action is null");
                 return;
             }
 
-            var actions = scope.ServiceProvider.GetServices<Interfaces.IAction>();
+            var actions = scope.ServiceProvider.GetServices<IAction>();
             var commandAction = actions.FirstOrDefault(x => x.Action == actionId);
 
             if (commandAction != null)
@@ -78,8 +83,9 @@ namespace ChatBot.Anonymous.Services.StepByStep
                         await commandAction.ExecuteSteps(message: update.Message, user: user);
                     }
                 }
-                catch
+                catch (Exception ex)
                 {
+                    _logger.LogError(ex, "Problem with action service");
                 }
             }
         }

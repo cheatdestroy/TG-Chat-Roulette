@@ -10,59 +10,81 @@ using ChatBot.Anonymous.Services.StepByStep.Actions;
 using ChatBot.Anonymous.Services.StepByStep.Actions.StartAction;
 using ChatBot.Anonymous.Services.StepsByStep.Steps;
 using Microsoft.EntityFrameworkCore;
+using NLog;
+using NLog.Web;
 using Telegram.Bot;
 
-var builder = WebApplication.CreateBuilder(args);
-var botConfig = builder.Configuration.GetMainConfigurationToObject();
-var dbConfig = builder.Configuration.GetRequiredSection(ConfigurationHelper.GetNameSectionDatabaseConfiguration())["ConnectingString"];
+var logger = LogManager.Setup()
+    .LoadConfigurationFromAppSettings()
+    .GetCurrentClassLogger();
+logger.Debug("Application started...");
 
-builder.Services.AddTransient<IUser, UsersRepository>();
-builder.Services.AddTransient<ISettings, SettingsRepository>();
-builder.Services.AddTransient<IAction, ActionsRepository>();
-builder.Services.AddTransient<RepositoryService>();
+try
+{
+    var builder = WebApplication.CreateBuilder(args);
+    var botConfig = builder.Configuration.GetMainConfigurationToObject();
+    var dbConfig = builder.Configuration.GetRequiredSection(ConfigurationHelper.GetNameSectionDatabaseConfiguration())["ConnectingString"];
 
-// Добавление конфигурации вебхука
-builder.Services.AddHostedService<ConfigureWebHook>();
+    builder.Services.AddTransient<IUser, UsersRepository>();
+    builder.Services.AddTransient<ISettings, SettingsRepository>();
+    builder.Services.AddTransient<IAction, ActionsRepository>();
+    builder.Services.AddTransient<RepositoryService>();
 
-// Добавление сервиса последовательных действий
-builder.Services.AddActionService<ActionService>();
+    // Добавление конфигурации вебхука
+    builder.Services.AddHostedService<ConfigureWebHook>();
 
-// Добавление шагов для действий
-builder.Services
-    .AddStep<GenderStep>()
-    .AddStep<AgeStep>()
-    .AddStep<PreferredChatTypeStep>()
-    .AddStep<PreferredGenderStep>()
-    .AddStep<PreferredAgeStep>();
+    // Добавление сервиса последовательных действий
+    builder.Services.AddActionService<ActionService>();
 
-// Добавление последовательности шагов для определенных действий
-builder.Services
-    .AddActionSteps<StartActionSteps>();
+    // Добавление шагов для действий
+    builder.Services
+        .AddStep<GenderStep>()
+        .AddStep<AgeStep>()
+        .AddStep<PreferredChatTypeStep>()
+        .AddStep<PreferredGenderStep>()
+        .AddStep<PreferredAgeStep>();
 
-// Добавление действий
-builder.Services
-    .AddAction<StartAction<StartActionSteps>>();
+    // Добавление последовательности шагов для определенных действий
+    builder.Services
+        .AddActionSteps<StartActionSteps>();
 
-// Добавление конфигурации команд и сами команды
-builder.Services.AddCommandService<CommandService>()
-    .AddCommand<StartCommand>()
-    .AddCommand<ProfileCommand>()
-    .AddCommand<TestCommand>();
+    // Добавление действий
+    builder.Services
+        .AddAction<StartAction<StartActionSteps>>();
 
-// Замена стандартного HttpClient
-builder.Services.AddHttpClient("tgwebhook")
-    .AddTypedClient<ITelegramBotClient>(httpClient => new TelegramBotClient(botConfig.Token, httpClient));
+    // Добавление конфигурации команд и сами команды
+    builder.Services.AddCommandService<CommandService>()
+        .AddCommand<StartCommand>()
+        .AddCommand<ProfileCommand>()
+        .AddCommand<TestCommand>();
 
-// Контекст базы данных
-builder.Services.AddDbContext<BotDbContext>(options => options.UseSqlServer(dbConfig));
+    // Замена стандартного HttpClient
+    builder.Services.AddHttpClient("tgwebhook")
+        .AddTypedClient<ITelegramBotClient>(httpClient => new TelegramBotClient(botConfig.Token, httpClient));
 
-builder.Services.AddControllers()
-    .AddNewtonsoftJson();
+    // Контекст базы данных
+    builder.Services.AddDbContext<BotDbContext>(options => options.UseSqlServer(dbConfig));
 
-var app = builder.Build();
+    builder.Services.AddControllers()
+        .AddNewtonsoftJson();
 
-app.UseHttpsRedirection();
+    builder.Logging.ClearProviders();
+    builder.Host.UseNLog();
 
-app.MapControllers();
+    var app = builder.Build();
 
-app.Run();
+    app.UseHttpsRedirection();
+
+    app.MapControllers();
+
+    app.Run();
+}
+catch (Exception ex)
+{
+    logger.Error(ex, "Problem with startup...");
+    throw;
+}
+finally
+{
+    LogManager.Shutdown();
+}

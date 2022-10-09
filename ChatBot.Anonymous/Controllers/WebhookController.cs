@@ -1,8 +1,6 @@
 ﻿using ChatBot.Anonymous.Models.Interfaces;
-using ChatBot.Anonymous.Services;
 using ChatBot.Anonymous.Services.StepByStep.Interfaces;
 using Microsoft.AspNetCore.Mvc;
-using Telegram.Bot;
 using Telegram.Bot.Types;
 
 namespace ChatBot.Anonymous.Controllers
@@ -11,11 +9,13 @@ namespace ChatBot.Anonymous.Controllers
     [Route("api/webhook")]
     public class WebhookController : ControllerBase
     {
+        private readonly ILogger<WebhookController> _logger;
         private readonly ICommandService _commandService;
         private readonly IActionService _actionService;
 
-        public WebhookController(ICommandService commandService, IActionService actionService)
+        public WebhookController(ILogger<WebhookController> logger, ICommandService commandService, IActionService actionService)
         {
+            _logger = logger;
             _commandService = commandService;
             _actionService = actionService;
         }
@@ -28,6 +28,7 @@ namespace ChatBot.Anonymous.Controllers
         [HttpPost("update")]
         public async Task<ActionResult> Update([FromBody] Update update)
         {
+            _logger.LogTrace($"Update successfully received ({update.Message?.From?.Id ?? update.CallbackQuery?.Message?.From?.Id} | {update.Message?.Text ?? update.CallbackQuery?.Data})");
             var isDone = await _commandService.ExecuteCommand(update: update);
 
             if (!isDone)
@@ -45,6 +46,7 @@ namespace ChatBot.Anonymous.Controllers
         [HttpGet("hc")]
         public string HealthCheck()
         {
+            _logger.LogTrace("Server available");
             return "Server available";
         }
     }
