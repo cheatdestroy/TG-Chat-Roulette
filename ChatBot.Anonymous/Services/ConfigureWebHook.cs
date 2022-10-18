@@ -28,7 +28,7 @@ namespace ChatBot.Anonymous.Services
             await botClient.SetWebhookAsync(
                 url: webhookAddress,
                 allowedUpdates: Array.Empty<UpdateType>(),
-                dropPendingUpdates: false,
+                dropPendingUpdates: true,
                 cancellationToken: cancellationToken);
         }
 
