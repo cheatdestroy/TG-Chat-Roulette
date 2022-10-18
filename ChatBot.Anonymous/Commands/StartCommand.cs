@@ -1,12 +1,7 @@
 ﻿using ChatBot.Anonymous.Common.Enums;
-using ChatBot.Anonymous.Common.Helpers;
-using ChatBot.Anonymous.Domain.Repository.Interfaces;
 using ChatBot.Anonymous.Models.Interfaces;
-using ChatBot.Anonymous.Services;
 using ChatBot.Anonymous.Services.StepByStep.Interfaces;
-using Telegram.Bot;
 using Telegram.Bot.Types;
-using Telegram.Bot.Types.Enums;
 
 namespace ChatBot.Anonymous.Commands
 {
@@ -28,11 +23,6 @@ namespace ChatBot.Anonymous.Commands
 
         public async Task Execute(Update update)
         {
-            if (update.Message?.Chat.Type != ChatType.Private)
-            {
-                return;
-            }
-
             await _actionService.ExecuteAction(update: update, action: CommandActions.StartAction);
         }
     }

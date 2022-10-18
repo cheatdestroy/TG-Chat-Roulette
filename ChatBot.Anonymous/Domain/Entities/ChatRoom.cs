@@ -11,9 +11,9 @@ namespace ChatBot.Anonymous.Domain.Entities
         public int NumberMessagesFirstUser { get; set; }
         public int NumberMessagesSecondUser { get; set; }
         public int StatusRoom { get; set; }
+        public long? InitiatorEndId { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime? EndDate { get; set; }
-
         public virtual User FirstUser { get; set; } = null!;
         public virtual User SecondUser { get; set; } = null!;
     }

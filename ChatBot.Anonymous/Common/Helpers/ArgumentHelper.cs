@@ -58,6 +58,18 @@ namespace ChatBot.Anonymous.Common.Helpers
             }
         }
 
+        /// <summary>
+        /// Проверяет вхождение указанного значения в указанный диапазон
+        /// </summary>
+        /// <param name="value"> Значение </param>
+        /// <param name="maxValue"> Максимальное значение </param>
+        /// <param name="minValue"> Минимальное значение </param>
+        /// <param name="message"> Сообщение при исключении </param>
+        /// <param name="chatId"></param>
+        /// <param name="botClient"></param>
+        /// <param name="paramName"></param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException"> Если значение не входит в диапазон </exception>
         public static async Task OutOfRange(
             int value,
             int maxValue,
@@ -77,11 +89,20 @@ namespace ChatBot.Anonymous.Common.Helpers
                         parseMode: ParseMode.Markdown);
                 }
 
-                throw new ArgumentNullException(paramName, message);
+                throw new ArgumentOutOfRangeException(paramName, message);
             }
         }
-        
-        public static async Task OutOfRange(
+
+        /// <summary>
+        /// Проверяет вхождение указанного значения в указанный диапазон
+        /// </summary>
+        /// <param name="value"> Значение </param>
+        /// <param name="maxValue"> Максимальное значение </param>
+        /// <param name="minValue"> Минимальное значение </param>
+        /// <param name="message"> Сообщение при исключении </param>
+        /// <param name="paramName"></param>
+        /// <exception cref="ArgumentNullException"> Если значение не входит в диапазон </exception>
+        public static void OutOfRange(
             int value,
             int maxValue,
             int minValue,
@@ -90,7 +111,7 @@ namespace ChatBot.Anonymous.Common.Helpers
         {
             if (maxValue < value || value < minValue)
             {
-                throw new ArgumentNullException(paramName, message);
+                throw new ArgumentOutOfRangeException(paramName, message);
             }
         }
     }

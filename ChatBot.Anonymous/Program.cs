@@ -3,8 +3,10 @@ using ChatBot.Anonymous.Common.Helpers;
 using ChatBot.Anonymous.Domain.Context;
 using ChatBot.Anonymous.Domain.Repository;
 using ChatBot.Anonymous.Domain.Repository.Interfaces;
+using ChatBot.Anonymous.Models.Interfaces;
 using ChatBot.Anonymous.Services;
 using ChatBot.Anonymous.Services.CollectionExtension;
+using ChatBot.Anonymous.Services.Communication;
 using ChatBot.Anonymous.Services.StepByStep;
 using ChatBot.Anonymous.Services.StepByStep.Actions;
 using ChatBot.Anonymous.Services.StepByStep.Actions.StartAction;
@@ -30,8 +32,10 @@ try
     builder.Services.AddTransient<IAction, ActionsRepository>();
     builder.Services.AddTransient<RepositoryService>();
 
-    // Добавление конфигурации вебхука
-    builder.Services.AddHostedService<ConfigureWebHook>();
+    builder.Services.AddSingleton<IChatHub, ChatHub>();
+
+    builder.Services
+        .AddHostedService<ConfigureWebHook>();
 
     // Добавление сервиса последовательных действий
     builder.Services.AddActionService<ActionService>();
@@ -55,8 +59,9 @@ try
     // Добавление конфигурации команд и сами команды
     builder.Services.AddCommandService<CommandService>()
         .AddCommand<StartCommand>()
-        .AddCommand<ProfileCommand>()
-        .AddCommand<TestCommand>();
+        .AddCommand<StopCommand>()
+        .AddCommand<SearchCommand>()
+        .AddCommand<SkipCommand>();
 
     // Замена стандартного HttpClient
     builder.Services.AddHttpClient("tgwebhook")

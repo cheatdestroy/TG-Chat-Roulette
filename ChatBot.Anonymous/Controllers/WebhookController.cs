@@ -1,4 +1,5 @@
-﻿using ChatBot.Anonymous.Models.Interfaces;
+﻿using ChatBot.Anonymous.Common.Helpers;
+using ChatBot.Anonymous.Models.Interfaces;
 using ChatBot.Anonymous.Services.StepByStep.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Telegram.Bot.Types;
@@ -12,12 +13,14 @@ namespace ChatBot.Anonymous.Controllers
         private readonly ILogger<WebhookController> _logger;
         private readonly ICommandService _commandService;
         private readonly IActionService _actionService;
+        private readonly IChatHub _chatHub;
 
-        public WebhookController(ILogger<WebhookController> logger, ICommandService commandService, IActionService actionService)
+        public WebhookController(ILogger<WebhookController> logger, ICommandService commandService, IActionService actionService, IChatHub chatHub)
         {
             _logger = logger;
             _commandService = commandService;
             _actionService = actionService;
+            _chatHub = chatHub;
         }
 
         /// <summary>
@@ -28,13 +31,33 @@ namespace ChatBot.Anonymous.Controllers
         [HttpPost("update")]
         public async Task<ActionResult> Update([FromBody] Update update)
         {
-            _logger.LogTrace($"Update successfully received ({update.Message?.From?.Id ?? update.CallbackQuery?.Message?.From?.Id} | {update.Message?.Text ?? update.CallbackQuery?.Data})");
-            var isDone = await _commandService.ExecuteCommand(update: update);
+            _logger.LogTrace($"Update successfully received ({update.GetSenderId()} | {update.Message?.Text ?? update.CallbackQuery?.Data})");
 
-            if (!isDone)
+            if (!update.IsSenderValid())
             {
-                await _actionService.ExecuteAction(update: update);
+                return Ok();
             }
+
+            var isCommandFound = await _commandService.ExecuteCommand(update: update);
+
+            if (isCommandFound)
+            {
+                return Ok();
+            }
+
+            var userId = update.Message?.From?.Id;
+
+            if (userId != null)
+            {
+                var isUserInRoom = _chatHub.IsUserInChatRoom(userId.Value);
+                
+                if (isUserInRoom)
+                {
+                    return Ok();
+                }
+            }
+
+            await _actionService.ExecuteAction(update: update);
 
             return Ok();
         }
