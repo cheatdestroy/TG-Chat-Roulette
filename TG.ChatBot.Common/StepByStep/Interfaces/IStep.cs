@@ -1,6 +1,6 @@
 ﻿using TG.ChatBot.Common.StepByStep.Enums;
 
-namespace TG.ChatBot.Host.Services.StepByStep.Interfaces
+namespace TG.ChatBot.Common.StepByStep.Interfaces
 {
     public interface IStep
     {

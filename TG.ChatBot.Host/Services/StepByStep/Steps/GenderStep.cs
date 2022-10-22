@@ -6,7 +6,7 @@ using TG.ChatBot.Common.Common.Enums;
 using TG.ChatBot.Common.Common.Helpers;
 using TG.ChatBot.Common.Domain;
 using TG.ChatBot.Common.StepByStep.Enums;
-using TG.ChatBot.Host.Services.StepByStep.Interfaces;
+using TG.ChatBot.Common.StepByStep.Interfaces;
 
 namespace TG.ChatBot.Host.Services.StepsByStep.Steps
 {

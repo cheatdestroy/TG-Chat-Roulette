@@ -1,10 +1,9 @@
-﻿using TG.ChatBot.Host.Services.StepByStep.Interfaces;
-using Telegram.Bot.Types;
+﻿using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
-using IAction = TG.ChatBot.Host.Services.StepByStep.Interfaces.IAction;
-using TG.ChatBot.Common.StepByStep.Enums;
-using TG.ChatBot.Common.Domain;
 using TG.ChatBot.Common.Common.Helpers;
+using TG.ChatBot.Common.Domain;
+using TG.ChatBot.Common.StepByStep.Enums;
+using TG.ChatBot.Common.StepByStep.Interfaces;
 
 namespace TG.ChatBot.Host.Services.StepByStep
 {

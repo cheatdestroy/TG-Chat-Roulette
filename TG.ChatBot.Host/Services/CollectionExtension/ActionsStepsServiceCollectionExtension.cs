@@ -1,4 +1,4 @@
-﻿using TG.ChatBot.Host.Services.StepByStep.Interfaces;
+﻿using TG.ChatBot.Common.StepByStep.Interfaces;
 
 namespace TG.ChatBot.Host.Services.CollectionExtension
 {

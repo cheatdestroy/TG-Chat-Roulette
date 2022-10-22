@@ -3,7 +3,7 @@ using Telegram.Bot.Types;
 using TG.ChatBot.Common.ChatHub.Models;
 using TG.ChatBot.Common.Common.Helpers;
 using TG.ChatBot.Common.Models.Interfaces;
-using TG.ChatBot.Host.Services.StepByStep.Interfaces;
+using TG.ChatBot.Common.StepByStep.Interfaces;
 
 namespace TG.ChatBot.Host.Controllers
 {
