@@ -1,11 +1,12 @@
-﻿using TG.ChatBot.Host.Common.Enums;
-using TG.ChatBot.Host.Common.Helpers;
-using TG.ChatBot.Host.Services;
-using TG.ChatBot.Host.Services.StepByStep.Interfaces;
-using System.Text;
+﻿using System.Text;
 using Telegram.Bot;
 using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.ReplyMarkups;
+using TG.ChatBot.Common.Common.Enums;
+using TG.ChatBot.Common.Common.Helpers;
+using TG.ChatBot.Common.Domain;
+using TG.ChatBot.Common.StepByStep.Enums;
+using TG.ChatBot.Host.Services.StepByStep.Interfaces;
 
 namespace TG.ChatBot.Host.Services.StepsByStep.Steps
 {
@@ -44,7 +45,7 @@ namespace TG.ChatBot.Host.Services.StepsByStep.Steps
         public async Task Processing(string data, long userId)
         {
             var gender = int.Parse(data).ToEnum<Gender>();
-            
+
             await Argument.NotNull(
                 value: gender,
                 message: $"_Выбран неверный пол: {gender.GetDescription()}_",

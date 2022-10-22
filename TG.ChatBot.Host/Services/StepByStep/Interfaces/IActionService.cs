@@ -1,5 +1,5 @@
-﻿using TG.ChatBot.Host.Common.Enums;
-using Telegram.Bot.Types;
+﻿using Telegram.Bot.Types;
+using TG.ChatBot.Common.StepByStep.Enums;
 
 namespace TG.ChatBot.Host.Services.StepByStep.Interfaces
 {

@@ -1,10 +1,10 @@
-﻿using TG.ChatBot.Host.Common.Enums;
-using TG.ChatBot.Host.Common.Helpers;
-using TG.ChatBot.Host.Services.StepByStep.Interfaces;
-using System.Text;
-using Telegram.Bot;
+﻿using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
+using TG.ChatBot.Common.Common.Helpers;
+using TG.ChatBot.Common.Domain;
+using TG.ChatBot.Common.StepByStep.Enums;
+using TG.ChatBot.Host.Services.StepByStep.Interfaces;
 
 namespace TG.ChatBot.Host.Services.StepByStep.Actions
 {
@@ -32,7 +32,7 @@ namespace TG.ChatBot.Host.Services.StepByStep.Actions
         }
 
         #region Execute/Processing steps
-        public async Task ExecuteSteps(Message message, Domain.Entities.User user)
+        public async Task ExecuteSteps(Message message, Common.Domain.Entities.User user)
         {
             Argument.NotNull(user?.Action?.CurrentAction, "Current action is null");
 
@@ -61,7 +61,7 @@ namespace TG.ChatBot.Host.Services.StepByStep.Actions
             }
         }
 
-        public async Task ProcessingSteps(Update update, Domain.Entities.User user)
+        public async Task ProcessingSteps(Update update, Common.Domain.Entities.User user)
         {
             var currentStep = user.Action?.CurrentStep.ToEnum<Step>();
 

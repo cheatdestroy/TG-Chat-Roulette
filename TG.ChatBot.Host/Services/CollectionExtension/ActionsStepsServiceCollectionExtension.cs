@@ -1,6 +1,4 @@
-﻿using TG.ChatBot.Host.Common.Enums;
-using TG.ChatBot.Host.Models;
-using TG.ChatBot.Host.Services.StepByStep.Interfaces;
+﻿using TG.ChatBot.Host.Services.StepByStep.Interfaces;
 
 namespace TG.ChatBot.Host.Services.CollectionExtension
 {
@@ -15,7 +13,7 @@ namespace TG.ChatBot.Host.Services.CollectionExtension
         /// <typeparam name="TActionService"> Сервис действий </typeparam>
         /// <param name="services"> Контейнер </param>
         /// <returns></returns>
-        public static IServiceCollection AddActionService<TActionService>(this IServiceCollection services) 
+        public static IServiceCollection AddActionService<TActionService>(this IServiceCollection services)
             where TActionService : class, IActionService
         {
             services.AddSingleton<IActionService, TActionService>();

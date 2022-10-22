@@ -1,7 +1,7 @@
-﻿using TG.ChatBot.Host.Common.Helpers;
-using TG.ChatBot.Host.Models;
-using Telegram.Bot;
+﻿using Telegram.Bot;
 using Telegram.Bot.Types.Enums;
+using TG.ChatBot.Common.Common.Helpers;
+using TG.ChatBot.Common.Models;
 
 namespace TG.ChatBot.Host.Services
 {

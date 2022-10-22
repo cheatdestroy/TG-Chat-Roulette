@@ -1,10 +1,10 @@
-﻿using TG.ChatBot.Host.Services;
-using TG.ChatBot.Host.Common.Helpers;
+﻿using System.Text;
 using Telegram.Bot;
-using TG.ChatBot.Host.Models;
 using Telegram.Bot.Types.Enums;
-using System.Text;
-using TG.ChatBot.Host.Common.Enums;
+using TG.ChatBot.Common.Common.Helpers;
+using TG.ChatBot.Common.Domain;
+using TG.ChatBot.Common.Models;
+using TG.ChatBot.Common.StepByStep.Enums;
 using TG.ChatBot.Host.Services.StepByStep.Interfaces;
 
 namespace TG.ChatBot.Host.Services.StepsByStep.Steps

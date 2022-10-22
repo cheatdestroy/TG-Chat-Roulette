@@ -1,8 +1,8 @@
-﻿using TG.ChatBot.Host.Common.Enums;
-using TG.ChatBot.Host.Common.Helpers;
-using TG.ChatBot.Host.Domain.Entities;
-using TG.ChatBot.Host.Models.Interfaces;
-using Telegram.Bot;
+﻿using TG.ChatBot.Common.ChatHub.Enums;
+using TG.ChatBot.Common.ChatHub.Models;
+using TG.ChatBot.Common.Common.Enums;
+using TG.ChatBot.Common.Common.Helpers;
+using TG.ChatBot.Common.Domain.Entities;
 
 namespace TG.ChatBot.Host.Services.Communication
 {
@@ -32,7 +32,7 @@ namespace TG.ChatBot.Host.Services.Communication
                 _logger.LogWarning("The user is already in the pool");
                 return null;
             }
-            
+
             _usersSearchPool.Add(user);
             _logger.LogInformation("User was successfully added to the search pool");
 

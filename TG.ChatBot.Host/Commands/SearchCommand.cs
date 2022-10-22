@@ -1,10 +1,11 @@
-﻿using TG.ChatBot.Host.Common.Helpers;
-using TG.ChatBot.Host.Models.Interfaces;
-using TG.ChatBot.Host.Services;
-using System.Text;
+﻿using System.Text;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
+using TG.ChatBot.Common.ChatHub.Models;
+using TG.ChatBot.Common.Common.Helpers;
+using TG.ChatBot.Common.Domain;
+using TG.ChatBot.Common.Models.Interfaces;
 
 namespace TG.ChatBot.Host.Commands
 {

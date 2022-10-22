@@ -1,8 +1,9 @@
-﻿using TG.ChatBot.Host.Common.Helpers;
-using TG.ChatBot.Host.Models.Interfaces;
-using TG.ChatBot.Host.Services.StepByStep.Interfaces;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Telegram.Bot.Types;
+using TG.ChatBot.Common.ChatHub.Models;
+using TG.ChatBot.Common.Common.Helpers;
+using TG.ChatBot.Common.Models.Interfaces;
+using TG.ChatBot.Host.Services.StepByStep.Interfaces;
 
 namespace TG.ChatBot.Host.Controllers
 {
@@ -50,7 +51,7 @@ namespace TG.ChatBot.Host.Controllers
             if (userId != null)
             {
                 var isUserInRoom = _chatHub.IsUserInChatRoom(userId.Value);
-                
+
                 if (isUserInRoom)
                 {
                     return Ok();

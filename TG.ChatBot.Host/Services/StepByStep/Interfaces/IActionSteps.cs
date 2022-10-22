@@ -1,4 +1,5 @@
-﻿using TG.ChatBot.Host.Common.Enums;
+﻿
+using TG.ChatBot.Common.StepByStep.Enums;
 
 namespace TG.ChatBot.Host.Services.StepByStep.Interfaces
 {

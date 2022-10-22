@@ -1,9 +1,4 @@
 using TG.ChatBot.Host.Commands;
-using TG.ChatBot.Host.Common.Helpers;
-using TG.ChatBot.Host.Domain.Context;
-using TG.ChatBot.Host.Domain.Repository;
-using TG.ChatBot.Host.Domain.Repository.Interfaces;
-using TG.ChatBot.Host.Models.Interfaces;
 using TG.ChatBot.Host.Services;
 using TG.ChatBot.Host.Services.CollectionExtension;
 using TG.ChatBot.Host.Services.Communication;
@@ -11,10 +6,16 @@ using TG.ChatBot.Host.Services.StepByStep;
 using TG.ChatBot.Host.Services.StepByStep.Actions;
 using TG.ChatBot.Host.Services.StepByStep.Actions.StartAction;
 using TG.ChatBot.Host.Services.StepsByStep.Steps;
-using Microsoft.EntityFrameworkCore;
 using NLog;
 using NLog.Web;
 using Telegram.Bot;
+using TG.ChatBot.Common.Common.Helpers;
+using TG.ChatBot.Common.Domain.Repository;
+using TG.ChatBot.Common.Domain.Repository.Interfaces;
+using TG.ChatBot.Common.ChatHub.Models;
+using TG.ChatBot.Common.Domain.Context;
+using Microsoft.EntityFrameworkCore;
+using TG.ChatBot.Common.Domain;
 
 var logger = LogManager.Setup()
     .LoadConfigurationFromAppSettings()

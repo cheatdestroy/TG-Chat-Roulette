@@ -1,8 +1,5 @@
-﻿using TG.ChatBot.Host.Domain.Repository.Interfaces;
-using TG.ChatBot.Host.Models.Interfaces;
-using Telegram.Bot;
-using Telegram.Bot.Types;
-using Telegram.Bot.Types.Enums;
+﻿using Telegram.Bot.Types;
+using TG.ChatBot.Common.Models.Interfaces;
 
 namespace TG.ChatBot.Host.Services
 {

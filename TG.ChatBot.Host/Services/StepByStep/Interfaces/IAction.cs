@@ -1,5 +1,5 @@
-﻿using TG.ChatBot.Host.Common.Enums;
-using Telegram.Bot.Types;
+﻿using Telegram.Bot.Types;
+using TG.ChatBot.Common.StepByStep.Enums;
 
 namespace TG.ChatBot.Host.Services.StepByStep.Interfaces
 {
@@ -21,7 +21,7 @@ namespace TG.ChatBot.Host.Services.StepByStep.Interfaces
         /// <param name="message"></param>
         /// <param name="user"> Пользователь </param>
         /// <returns></returns>
-        Task ExecuteSteps(Message message, Domain.Entities.User user);
+        Task ExecuteSteps(Message message, Common.Domain.Entities.User user);
 
         /// <summary>
         /// Обрабатывает пошаговое получение данных
@@ -29,7 +29,7 @@ namespace TG.ChatBot.Host.Services.StepByStep.Interfaces
         /// <param name="update"></param>
         /// <param name="user"> Пользователь </param>
         /// <returns></returns>
-        Task ProcessingSteps(Update update, Domain.Entities.User user);
+        Task ProcessingSteps(Update update, Common.Domain.Entities.User user);
 
         /// <summary>
         /// Завершает выполнение текущего действия

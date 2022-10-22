@@ -1,5 +1,4 @@
-﻿using TG.ChatBot.Host.Commands;
-using TG.ChatBot.Host.Models.Interfaces;
+﻿using TG.ChatBot.Common.Models.Interfaces;
 
 namespace TG.ChatBot.Host.Services.CollectionExtension
 {

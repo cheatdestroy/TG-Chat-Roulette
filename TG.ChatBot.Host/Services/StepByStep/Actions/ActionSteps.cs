@@ -1,5 +1,4 @@
-﻿using TG.ChatBot.Host.Common.Enums;
-using TG.ChatBot.Host.Models;
+﻿using TG.ChatBot.Common.StepByStep.Enums;
 using TG.ChatBot.Host.Services.StepByStep.Interfaces;
 
 namespace TG.ChatBot.Host.Services.StepByStep.Actions
@@ -46,7 +45,7 @@ namespace TG.ChatBot.Host.Services.StepByStep.Actions
         public virtual IStep? GetNextStep(Step stepId)
         {
             var index = _steps.FindIndex(x => x.Id == stepId);
-            
+
             if (++index >= _steps.Count)
             {
                 return null;
