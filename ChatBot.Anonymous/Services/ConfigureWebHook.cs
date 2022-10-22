@@ -32,12 +32,14 @@ namespace ChatBot.Anonymous.Services
                 cancellationToken: cancellationToken);
         }
 
-        public async Task StopAsync(CancellationToken cancellationToken)
+        public Task StopAsync(CancellationToken cancellationToken)
         {
-            using var scope = _serviceProvider.CreateScope();
+            /*using var scope = _serviceProvider.CreateScope();
             var botClient = scope.ServiceProvider.GetRequiredService<ITelegramBotClient>();
 
-            await botClient.DeleteWebhookAsync(cancellationToken: cancellationToken);
+            await botClient.DeleteWebhookAsync(cancellationToken: cancellationToken);*/
+
+            return Task.CompletedTask;
         }
     }
 }
