@@ -1,0 +1,76 @@
+﻿using TG.ChatBot.Host.Common.Helpers;
+using TG.ChatBot.Host.Models.Interfaces;
+using TG.ChatBot.Host.Services.StepByStep.Interfaces;
+using Microsoft.AspNetCore.Mvc;
+using Telegram.Bot.Types;
+
+namespace TG.ChatBot.Host.Controllers
+{
+    [ApiController]
+    [Route("api/webhook")]
+    public class WebhookController : ControllerBase
+    {
+        private readonly ILogger<WebhookController> _logger;
+        private readonly ICommandService _commandService;
+        private readonly IActionService _actionService;
+        private readonly IChatHub _chatHub;
+
+        public WebhookController(ILogger<WebhookController> logger, ICommandService commandService, IActionService actionService, IChatHub chatHub)
+        {
+            _logger = logger;
+            _commandService = commandService;
+            _actionService = actionService;
+            _chatHub = chatHub;
+        }
+
+        /// <summary>
+        /// Получает обновления от телеграм бота
+        /// </summary>
+        /// <param name="update"></param>
+        /// <returns></returns>
+        [HttpPost("update")]
+        public async Task<ActionResult> Update([FromBody] Update update)
+        {
+            _logger.LogTrace($"Update successfully received ({update.GetSenderId()} | {update.Message?.Text ?? update.CallbackQuery?.Data})");
+
+            if (!update.IsSenderValid())
+            {
+                return Ok();
+            }
+
+            var isCommandFound = await _commandService.ExecuteCommand(update: update);
+
+            if (isCommandFound)
+            {
+                return Ok();
+            }
+
+            var userId = update.Message?.From?.Id;
+
+            if (userId != null)
+            {
+                var isUserInRoom = _chatHub.IsUserInChatRoom(userId.Value);
+                
+                if (isUserInRoom)
+                {
+                    return Ok();
+                }
+            }
+
+            await _actionService.ExecuteAction(update: update);
+
+            return Ok();
+        }
+
+        /// <summary>
+        /// Временная фича для пробуждения приложения
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("hc")]
+        public string HealthCheck()
+        {
+            _logger.LogTrace("Server available");
+            return "Server available";
+        }
+    }
+}
