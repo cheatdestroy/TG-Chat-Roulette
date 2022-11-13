@@ -16,6 +16,7 @@ using TG.ChatBot.Common.ChatHub.Models;
 using TG.ChatBot.Common.Domain.Context;
 using Microsoft.EntityFrameworkCore;
 using TG.ChatBot.Common.Domain;
+using TG.ChatBot.Common.ChatHub.Enums;
 
 var logger = LogManager.Setup()
     .LoadConfigurationFromAppSettings()
@@ -33,6 +34,7 @@ try
     builder.Services.AddTransient<IAction, ActionsRepository>();
     builder.Services.AddTransient<RepositoryService>();
 
+    builder.Services.AddSingleton<IMessaging, MessagingBase>();
     builder.Services.AddSingleton<IChatHub, ChatHub>();
 
     builder.Services

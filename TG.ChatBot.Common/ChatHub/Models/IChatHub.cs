@@ -1,4 +1,5 @@
-﻿using TG.ChatBot.Common.Domain.Entities;
+﻿using TG.ChatBot.Common.ChatHub.Enums;
+using TG.ChatBot.Common.Domain.Entities;
 
 namespace TG.ChatBot.Common.ChatHub.Models
 {
@@ -40,6 +41,13 @@ namespace TG.ChatBot.Common.ChatHub.Models
         /// <param name="startRoom"> Начинать общение, если собеседник будет найден? </param>
         /// <returns> Возвращает собеседника, если он был найден; иначе null </returns>
         User? FindInterlocutor(User initiator, bool startRoom = false);
+
+        /// <summary>
+        /// Перенаправляет сообщение собеседнику
+        /// </summary>
+        /// <param name="message"> Текст сообщения </param>
+        /// <param name="senderId"> Уникальный идентификатор отправителя </param>
+        Task RedirectMessage(string message, long senderId);
 
         /// <summary>
         /// Проверяет пользователя на его нахождении в пуле поиска

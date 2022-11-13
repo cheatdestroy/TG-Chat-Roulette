@@ -35,7 +35,7 @@ namespace TG.ChatBot.Host.Commands
         {
             var userId = update.GetSenderId();
 
-            if (!userId.HasValue || !_chatHub.IsUserInChatRoom(userId.Value))
+            if (!userId.HasValue)
             {
                 return;
             }

@@ -9,16 +9,18 @@ namespace TG.ChatBot.Host.Services.Communication
     public class ChatHub : IChatHub
     {
         private readonly ILogger<ChatHub> _logger;
+        private readonly IMessaging _messaging;
 
         private readonly List<User> _usersSearchPool;
         private readonly List<ChatRoom> _chatRoomPool;
 
-        public ChatHub(ILogger<ChatHub> logger)
+        public ChatHub(ILogger<ChatHub> logger, IMessaging messaging)
         {
             _usersSearchPool = new List<User>();
             _chatRoomPool = new List<ChatRoom>();
 
             _logger = logger;
+            _messaging = messaging;
         }
 
         public User? AddUserInSearchPool(User user)
@@ -85,6 +87,17 @@ namespace TG.ChatBot.Host.Services.Communication
             return newChatRoom;
         }
 
+        public async Task RedirectMessage(string message, long senderId)
+        {
+            var chatRoom = _chatRoomPool.FirstOrDefault(x => x.FirstUserId == senderId || x.SecondUserId == senderId);
+
+            if (chatRoom != null)
+            {
+                var recipientId = chatRoom.FirstUserId == senderId ? chatRoom.SecondUserId : chatRoom.FirstUserId;
+                await _messaging.SendMessage(message: message, recipient: recipientId);
+            }
+        }
+
         public bool IsUserInSearchPool(long userId)
         {
             var user = _usersSearchPool.FirstOrDefault(x => x.UserId == userId);
@@ -94,9 +107,9 @@ namespace TG.ChatBot.Host.Services.Communication
 
         public bool IsUserInChatRoom(long userId)
         {
-            var user = _chatRoomPool.FirstOrDefault(x => x.FirstUserId == userId || x.SecondUserId == userId);
+            var chatRoom = _chatRoomPool.FirstOrDefault(x => x.FirstUserId == userId || x.SecondUserId == userId);
 
-            return user != null;
+            return chatRoom != null;
         }
 
         public User? FindInterlocutor(User initiator, bool startRoom = false)
@@ -109,7 +122,6 @@ namespace TG.ChatBot.Host.Services.Communication
             {
                 var potentialUserId = potentialUser.UserId;
                 var initiatorUserId = initiator.UserId;
-                var isPotentialUserValid = IsUserInSearchPool(potentialUserId);
 
                 if (startRoom)
                 {

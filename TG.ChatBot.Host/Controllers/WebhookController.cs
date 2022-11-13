@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Telegram.Bot;
 using Telegram.Bot.Types;
 using TG.ChatBot.Common.ChatHub.Models;
 using TG.ChatBot.Common.Common.Helpers;
@@ -46,19 +47,21 @@ namespace TG.ChatBot.Host.Controllers
                 return Ok();
             }
 
-            var userId = update.Message?.From?.Id;
+            var userId = update.GetSenderId();
 
             if (userId != null)
             {
-                var isUserInRoom = _chatHub.IsUserInChatRoom(userId.Value);
+                var message = update.Message?.Text;
 
-                if (isUserInRoom)
+                if (_chatHub.IsUserInChatRoom(userId.Value) && !string.IsNullOrEmpty(message))
                 {
-                    return Ok();
+                    await _chatHub.RedirectMessage(message: message, senderId: userId.Value);
+                }
+                else
+                {
+                    await _actionService.ExecuteAction(update: update);
                 }
             }
-
-            await _actionService.ExecuteAction(update: update);
 
             return Ok();
         }
