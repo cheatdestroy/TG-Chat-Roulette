@@ -9,5 +9,10 @@
         /// Инициализации при вводе команды /start
         /// </summary>
         StartAction = 100,
+
+        /// <summary>
+        /// Изменения данных при вводе команды /profile
+        /// </summary>
+        ProfileAction = 101
     }
 }

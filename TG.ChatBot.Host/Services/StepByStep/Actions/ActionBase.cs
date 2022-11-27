@@ -15,6 +15,10 @@ namespace TG.ChatBot.Host.Services.StepByStep.Actions
 
         public virtual CommandActions Action { get; }
         public virtual IActionSteps Steps { get; protected set; }
+
+        /// <summary>
+        /// Динамическое добавление степов из базы данных (в случае их отсутствии при вызове метода ProcessingSteps)
+        /// </summary>
         public bool IsDynamicSteps { get; protected set; }
 
         public ActionBase(

@@ -4,7 +4,6 @@ using TG.ChatBot.Host.Services.CollectionExtension;
 using TG.ChatBot.Host.Services.Communication;
 using TG.ChatBot.Host.Services.StepByStep;
 using TG.ChatBot.Host.Services.StepByStep.Actions;
-using TG.ChatBot.Host.Services.StepByStep.Actions.StartAction;
 using TG.ChatBot.Host.Services.StepsByStep.Steps;
 using NLog;
 using NLog.Web;
@@ -17,6 +16,7 @@ using TG.ChatBot.Common.Domain.Context;
 using Microsoft.EntityFrameworkCore;
 using TG.ChatBot.Common.Domain;
 using TG.ChatBot.Common.ChatHub.Enums;
+using TG.ChatBot.Host.Services.StepByStep.Steps;
 
 var logger = LogManager.Setup()
     .LoadConfigurationFromAppSettings()
@@ -44,27 +44,26 @@ try
     builder.Services.AddActionService<ActionService>();
 
     // Добавление шагов для действий
-    builder.Services
+    builder.Services.AddActionSteps<ActionSteps>()
         .AddStep<GenderStep>()
         .AddStep<AgeStep>()
         .AddStep<PreferredChatTypeStep>()
         .AddStep<PreferredGenderStep>()
-        .AddStep<PreferredAgeStep>();
-
-    // Добавление последовательности шагов для определенных действий
-    builder.Services
-        .AddActionSteps<StartActionSteps>();
+        .AddStep<PreferredAgeStep>()
+        .AddStep<ProfileStep>();
 
     // Добавление действий
     builder.Services
-        .AddAction<StartAction<StartActionSteps>>();
+        .AddAction<StartAction>()
+        .AddAction<ProfileAction>();
 
     // Добавление конфигурации команд и сами команды
     builder.Services.AddCommandService<CommandService>()
         .AddCommand<StartCommand>()
         .AddCommand<StopCommand>()
         .AddCommand<SearchCommand>()
-        .AddCommand<SkipCommand>();
+        .AddCommand<SkipCommand>()
+        .AddCommand<ProfileCommand>();
 
     // Замена стандартного HttpClient
     builder.Services.AddHttpClient("tgwebhook")

@@ -23,11 +23,16 @@
         /// <summary>
         /// Указание предпочитаемого пола собеседника
         /// </summary>
-        PreferredGender = 1004,
+        PreferredGender = 1003,
 
         /// <summary>
         /// Указание предпочитаемого возраста собеседника
         /// </summary>
-        PreferredAge = 1003,
+        PreferredAge = 1004,
+
+        /// <summary>
+        /// Изменение данных профиля
+        /// </summary>
+        Profile = 1005
     }
 }
