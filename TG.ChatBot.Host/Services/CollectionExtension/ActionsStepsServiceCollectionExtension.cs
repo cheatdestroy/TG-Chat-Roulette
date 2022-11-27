@@ -58,7 +58,7 @@ namespace TG.ChatBot.Host.Services.CollectionExtension
                 services.Remove(step);
             }
 
-            services.AddTransient<TStep>();
+            services.AddTransient<IStep, TStep>();
 
             return services;
         }

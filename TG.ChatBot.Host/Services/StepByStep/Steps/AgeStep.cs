@@ -36,7 +36,7 @@ namespace TG.ChatBot.Host.Services.StepsByStep.Steps
                 parseMode: ParseMode.Markdown);
         }
 
-        public async Task Processing(string data, long userId)
+        public async Task Processing(string data, long userId, Action<long, IStep, Step> action)
         {
             var age = int.Parse(data);
             var minimumAge = _configuration.MinimumAge;

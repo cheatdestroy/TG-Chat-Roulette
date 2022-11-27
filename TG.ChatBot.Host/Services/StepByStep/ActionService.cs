@@ -59,7 +59,7 @@ namespace TG.ChatBot.Host.Services.StepByStep
                 return;
             }
 
-            var actionId = user.Action.CurrentAction.ToEnum<CommandActions>();
+            var actionId = user.Action.CurrentAction?.ToEnum<CommandActions>();
 
             if (!actionId.HasValue)
             {
@@ -78,9 +78,9 @@ namespace TG.ChatBot.Host.Services.StepByStep
                     {
                         await commandAction.ProcessingSteps(update: update, user: user);
                     }
-                    else if (update.Message != null)
+                    else
                     {
-                        await commandAction.ExecuteSteps(message: update.Message, user: user);
+                        await commandAction.ExecuteSteps(user: user);
                     }
                 }
                 catch (Exception ex)

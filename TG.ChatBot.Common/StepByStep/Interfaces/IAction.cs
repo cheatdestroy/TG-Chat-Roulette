@@ -18,10 +18,9 @@ namespace TG.ChatBot.Common.StepByStep.Interfaces
         /// <summary>
         /// Вызывает пошаговую инициализацию
         /// </summary>
-        /// <param name="message"></param>
         /// <param name="user"> Пользователь </param>
         /// <returns></returns>
-        Task ExecuteSteps(Message message, Domain.Entities.User user);
+        Task ExecuteSteps(Domain.Entities.User user);
 
         /// <summary>
         /// Обрабатывает пошаговое получение данных
@@ -34,9 +33,17 @@ namespace TG.ChatBot.Common.StepByStep.Interfaces
         /// <summary>
         /// Завершает выполнение текущего действия
         /// </summary>
-        /// <param name="message"></param>
-        /// <param name="userId"> Уникальный идентификатор пользователя </param>
+        /// <param name="user"> Пользователь </param>
         /// <returns></returns>
-        Task FinishAction(Message message, long userId);
+        Task FinishAction(Domain.Entities.User user);
+
+        /// <summary>
+        /// Изменяет текущий шаг действия на указанный
+        /// </summary>
+        /// <param name="userId"> Уникальный идентификатор пользователя </param>
+        /// <param name="currentStepId"> Идентификатор текущего шага </param>
+        /// <param name="nextStepId"> Идентификатор нового шага </param>
+        /// <returns></returns>
+        void ChangeStep(long userId, IStep currentStepId, Step nextStepId);
     }
 }

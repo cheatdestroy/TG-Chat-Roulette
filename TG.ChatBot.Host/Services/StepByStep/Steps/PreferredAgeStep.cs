@@ -33,23 +33,23 @@ namespace TG.ChatBot.Host.Services.StepsByStep.Steps
                 {
                     new[]
                     {
-                        InlineKeyboardButton.WithCallbackData(AgeCategory.LessThanEighteen.GetDescription(), AgeCategory.LessThanEighteen.ToString("d")),
+                        InlineKeyboardButton.WithCallbackData(AgeCategory.LessThanEighteen.GetAgeRangeDescription(), AgeCategory.LessThanEighteen.ToString("d")),
                     },
                     new[]
                     {
-                        InlineKeyboardButton.WithCallbackData(AgeCategory.LessThanTwentyOne.GetDescription(), AgeCategory.LessThanTwentyOne.ToString("d")),
+                        InlineKeyboardButton.WithCallbackData(AgeCategory.LessThanTwentyOne.GetAgeRangeDescription(), AgeCategory.LessThanTwentyOne.ToString("d")),
                     },
                     new[]
                     {
-                        InlineKeyboardButton.WithCallbackData(AgeCategory.LessThanTwentyFive.GetDescription(), AgeCategory.LessThanTwentyFive.ToString("d")),
+                        InlineKeyboardButton.WithCallbackData(AgeCategory.LessThanTwentyFive.GetAgeRangeDescription(), AgeCategory.LessThanTwentyFive.ToString("d")),
                     },
                     new[]
                     {
-                        InlineKeyboardButton.WithCallbackData(AgeCategory.LessThanThirty.GetDescription(), AgeCategory.LessThanThirty.ToString("d")),
+                        InlineKeyboardButton.WithCallbackData(AgeCategory.LessThanThirty.GetAgeRangeDescription(), AgeCategory.LessThanThirty.ToString("d")),
                     },
                     new[]
                     {
-                        InlineKeyboardButton.WithCallbackData(AgeCategory.MoreThanThirty.GetDescription(), AgeCategory.MoreThanThirty.ToString("d"))
+                        InlineKeyboardButton.WithCallbackData(AgeCategory.MoreThanThirty.GetAgeRangeDescription(), AgeCategory.MoreThanThirty.ToString("d"))
                     },
                 });
 
@@ -60,13 +60,13 @@ namespace TG.ChatBot.Host.Services.StepsByStep.Steps
                 parseMode: ParseMode.Markdown, replyMarkup: keyboard);
         }
 
-        public async Task Processing(string data, long userId)
+        public async Task Processing(string data, long userId, Action<long, IStep, Step> action)
         {
             var preferredAge = int.Parse(data).ToEnum<AgeCategory>();
 
             await Argument.NotNull(
                 value: preferredAge,
-                message: $"_Выбран неверный возраст собеседника: {preferredAge.GetDescription()}_",
+                message: $"_Выбран неверный возраст собеседника: {preferredAge?.GetAgeRangeDescription()}_",
                 chatId: userId,
                 botClient: _botClient);
 

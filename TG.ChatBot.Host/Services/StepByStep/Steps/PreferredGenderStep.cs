@@ -49,7 +49,7 @@ namespace TG.ChatBot.Host.Services.StepsByStep.Steps
                 parseMode: ParseMode.Markdown, replyMarkup: keyboard);
         }
 
-        public async Task Processing(string data, long userId)
+        public async Task Processing(string data, long userId, Action<long, IStep, Step> action)
         {
             var preferredGender = int.Parse(data).ToEnum<Gender>();
 

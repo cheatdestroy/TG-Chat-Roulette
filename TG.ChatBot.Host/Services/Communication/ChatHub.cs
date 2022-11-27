@@ -151,8 +151,8 @@ namespace TG.ChatBot.Host.Services.Communication
                     return false;
                 }
 
-                _logger.LogTrace($"Min Age: {preferredAgeRange.Value.Max}");
-                _logger.LogTrace($"Max Age: {preferredAgeRange.Value.Min}");
+                _logger.LogTrace($"Min Age: {preferredAgeRange?.Min}");
+                _logger.LogTrace($"Max Age: {preferredAgeRange?.Max}");
 
                 var gender = user.UserSetting?.PreferredGender;
 
@@ -163,8 +163,10 @@ namespace TG.ChatBot.Host.Services.Communication
                 }
 
                 // Если предпочитаемый возраст не соответствует
-                if (preferredAgeRange.Value.Min > comparableUser.Age
-                    && preferredAgeRange.Value.Max < comparableUser.Age)
+                // Если предпочитаемый минимальный возраст больше, чем возраст собеседника
+                // Если предпочитаемый максимальный возраст меньше, чем возраст собеседника
+                if (preferredAgeRange?.Min > comparableUser.Age
+                    || preferredAgeRange?.Max < comparableUser.Age)
                 {
                     return false;
                 }

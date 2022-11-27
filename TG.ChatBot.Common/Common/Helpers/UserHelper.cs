@@ -19,10 +19,10 @@ namespace TG.ChatBot.Common.Common.Helpers
         /// <returns></returns>
         public static StringBuilder FormatUserInfo(this User user)
         {
-            var gender = user.Gender.ToEnum<Gender>().GetDescription();
-            var chatType = user.UserSetting?.PreferredChatType.ToEnum<CommunicationType>().GetDescription();
-            var preferredGender = user.UserSetting?.PreferredGender.ToEnum<Gender>().GetDescription();
-            var preferredAge = user.UserSetting?.PreferredAge.ToEnum<AgeCategory>().GetDescription();
+            var gender = user.Gender?.ToEnum<Gender>().GetDescription();
+            var chatType = user.UserSetting?.PreferredChatType?.ToEnum<CommunicationType>().GetDescription();
+            var preferredGender = user.UserSetting?.PreferredGender?.ToEnum<Gender>().GetDescription();
+            var preferredAge = user.UserSetting?.PreferredAge?.ToEnum<AgeCategory>()?.GetAgeRangeDescription();
 
             var userInfo = new StringBuilder();
             userInfo.Append($"Ваш пол: {gender}\n");

@@ -9,9 +9,10 @@ namespace TG.ChatBot.Common.StepByStep.Interfaces
         /// Добавляет шаг в коллекцию
         /// </summary>
         /// <remarks> Последовательность добавления влияет на результаты получения следующего/предыдущего/по умолчанию шага </remarks>
-        /// <param name="step"> Шаг </param>
+        /// <param name="stepId"> Идентификатор шага </param>
+        /// <param name="stepIndex"> Позиция элемента в коллекции. </param>
         /// <returns> Возвращает добавленный шаг </returns>
-        IStep? AddStep(IStep step);
+        IStep? AddStep(Step stepId, int? stepIndex = null);
 
         /// <summary>
         /// Получение шага по идентификатору шага
@@ -19,6 +20,13 @@ namespace TG.ChatBot.Common.StepByStep.Interfaces
         /// <param name="stepId"> Идентификатор шага </param>
         /// <returns> Возвращает шаг </returns>
         IStep? GetStepById(Step stepId);
+
+        /// <summary>
+        /// Получение индекса шага в коллекции
+        /// </summary>
+        /// <param name="stepId"> Идентификатор шага </param>
+        /// <returns></returns>
+        int? GetStepPosition(Step stepId);
 
         /// <summary>
         /// Получает следующий шаг

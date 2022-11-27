@@ -26,22 +26,6 @@ namespace TG.ChatBot.Common.Common.Helpers
         }
 
         /// <summary>
-        /// Переводит тип данных int? в указанный enum
-        /// </summary>
-        /// <typeparam name="T"> Перечесление </typeparam>
-        /// <param name="value"> Значение </param>
-        /// <returns> Возвращает значение перечисления, если оно присутствует в указанном перечислении; иначе null </returns>
-        public static T? ToEnum<T>(this int? value) where T : struct, Enum
-        {
-            if (!value.HasValue)
-            {
-                return null;
-            }
-
-            return value.Value.ToEnum<T>();
-        }
-
-        /// <summary>
         /// Получает значение атрибута Description
         /// </summary>
         /// <param name="value"> Значение перечисления </param>
@@ -76,11 +60,15 @@ namespace TG.ChatBot.Common.Common.Helpers
         }
 
         /// <summary>
-        /// Получает значение атрибута AgeRange
+        /// Получает атрибут перечисления или структуры
         /// </summary>
-        /// <param name="value"> Значение перечисления </param>
-        /// <returns> Возвращает значение атрибута; иначе null </returns>
-        public static (int Min, int Max)? GetAgeRange(this AgeCategory value)
+        /// <typeparam name="TResult"> Тип возвращаемого значения </typeparam>
+        /// <typeparam name="TParam"> Тип значения </typeparam>
+        /// <param name="value"> Значение </param>
+        /// <returns> Если атрибут найден, то возвращает атрибут структуры/перечисления; иначе null </returns>
+        public static TResult? GetCustomAttribute<TResult, TParam>(this TParam value)
+            where TResult : Attribute
+            where TParam : struct, Enum
         {
             var type = value.GetType();
             var name = Enum.GetName(type, value);
@@ -91,16 +79,40 @@ namespace TG.ChatBot.Common.Common.Helpers
 
                 if (field != null)
                 {
-                    var attr = (AgeRangeAttribute?)Attribute.GetCustomAttribute(field, typeof(AgeRangeAttribute));
+                    var attr = (TResult?)Attribute.GetCustomAttribute(field, typeof(TResult));
 
                     if (attr != null)
                     {
-                        return (attr.MinAge, attr.MaxAge);
+                        return attr;
                     }
                 }
             }
 
             return null;
+        }
+
+        /// <summary>
+        /// Получает минимальный и максимальный возраст из атрбитута AgeRange
+        /// </summary>
+        /// <param name="value"> Значение у которого есть атрибут AgeRange </param>
+        /// <returns> Если атрибут найден, то возвращает кортеж с минимальным и максимальным значением; иначе null </returns>
+        public static (int? Min, int? Max)? GetAgeRange(this AgeCategory value)
+        {
+            var result = value.GetCustomAttribute<AgeRangeAttribute, AgeCategory>();
+
+            return result != null ? (result.MinAge, result.MaxAge) : null;
+        }
+
+        /// <summary>
+        /// Получает описание из атрибута AgeRange
+        /// </summary>
+        /// <param name="value"> Значение у которого есть атрибут AgeRange </param>
+        /// <returns> Если атрибут найден, то возвращает описание; иначе null </returns>
+        public static string GetAgeRangeDescription(this AgeCategory value)
+        {
+            var result = value.GetCustomAttribute<AgeRangeAttribute, AgeCategory>();
+
+            return result?.ToString() ?? string.Empty;
         }
     }
 }

@@ -3,13 +3,39 @@
     [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field, AllowMultiple = false)]
     public class AgeRangeAttribute : Attribute
     {
-        public int MinAge { get; private set; }
-        public int MaxAge { get; private set; }
+        /// <summary>
+        /// Минимальный возраст
+        /// </summary>
+        public int MinAge { get; set; }
 
-        public AgeRangeAttribute(int minAge, int maxAge)
+        /// <summary>
+        /// Максимальный возраст
+        /// </summary>
+        public int MaxAge { get; set; } = int.MaxValue;
+
+        public AgeRangeAttribute()
         {
-            MinAge = minAge;
-            MaxAge = maxAge;
+        }
+
+        public override string ToString()
+        {
+            if (MinAge != default && MinAge != int.MinValue)
+            {
+                if (MaxAge != default && MaxAge != int.MaxValue)
+                {
+                    return $"от {MinAge} до {MaxAge}";
+                }
+                else
+                {
+                    return $"{MinAge} и выше";
+                }
+            }
+            else if (MaxAge != default && MaxAge != int.MaxValue)
+            {
+                return $"до {MaxAge}";
+            }
+
+            return string.Empty;
         }
     }
 }
