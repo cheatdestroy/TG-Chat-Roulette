@@ -1,7 +1,9 @@
-﻿using TG.ChatBot.Common.ChatHub.Enums;
+﻿using Telegram.Bot;
+using TG.ChatBot.Common.ChatHub.Enums;
 using TG.ChatBot.Common.ChatHub.Models;
 using TG.ChatBot.Common.Common.Enums;
 using TG.ChatBot.Common.Common.Helpers;
+using TG.ChatBot.Common.Common.Pattern;
 using TG.ChatBot.Common.Domain.Entities;
 
 namespace TG.ChatBot.Host.Services.Communication
@@ -10,18 +12,18 @@ namespace TG.ChatBot.Host.Services.Communication
     {
         private static ChatHub? instance;
         private readonly ILogger<ChatHub> _logger;
-        private readonly IMessaging _messaging;
+        private readonly ITelegramBotClient _botClient;
 
         private readonly List<User> _usersSearchPool;
-        private readonly List<ChatRoom> _chatRoomPool;
+        private readonly List<ManagerMediator> _chatRooms;
 
-        protected ChatHub(ILogger<ChatHub> logger, IMessaging messaging)
+        protected ChatHub(ILogger<ChatHub> logger, ITelegramBotClient botClient)
         {
             _usersSearchPool = new List<User>();
-            _chatRoomPool = new List<ChatRoom>();
+            _chatRooms = new List<ManagerMediator>();
 
             _logger = logger;
-            _messaging = messaging;
+            _botClient = botClient;
         }
 
         public static ChatHub GetInstance(IServiceProvider serviceProvider)
@@ -29,8 +31,8 @@ namespace TG.ChatBot.Host.Services.Communication
             if (instance == null)
             {
                 var logger = serviceProvider.GetRequiredService<ILogger<ChatHub>>();
-                var messaging = serviceProvider.GetRequiredService<IMessaging>();
-                instance = new ChatHub(logger, messaging);
+                var botClient = serviceProvider.GetRequiredService<ITelegramBotClient>();
+                instance = new ChatHub(logger, botClient);
             }
 
             return instance;
@@ -67,14 +69,14 @@ namespace TG.ChatBot.Host.Services.Communication
             return user;
         }
 
-        public ChatRoom? EndChat(long initiatorId)
+        public ManagerMediator? EndChat(long initiatorId)
         {
-            var chatRoom = _chatRoomPool.FirstOrDefault(x => x.FirstUserId == initiatorId || x.SecondUserId == initiatorId);
+            var chatRoom = _chatRooms.FirstOrDefault(x => x.FirstUser.Info.UserId == initiatorId || x.SecondUser.Info.UserId == initiatorId);
 
             if (chatRoom != null)
             {
-                _chatRoomPool.Remove(chatRoom);
-                chatRoom.InitiatorEndId = initiatorId;
+                _chatRooms.Remove(chatRoom);
+                //chatRoom.InitiatorEndId = initiatorId;
                 _logger.LogInformation("One of the chats was completed");
             }
 
@@ -94,7 +96,13 @@ namespace TG.ChatBot.Host.Services.Communication
                 StartDate = DateTime.Now
             };
 
-            _chatRoomPool.Add(newChatRoom);
+            var mediator = new ManagerMediator();
+            var firstInterlocutor = new Interlocutor(mediator, firstUser, _botClient);
+            var secondInterlocutor = new Interlocutor(mediator, secondUser, _botClient);
+            mediator.FirstUser = firstInterlocutor;
+            mediator.SecondUser = secondInterlocutor;
+
+            _chatRooms.Add(mediator);
             _logger.LogInformation("New chat room launched");
 
             return newChatRoom;
@@ -102,12 +110,11 @@ namespace TG.ChatBot.Host.Services.Communication
 
         public async Task RedirectMessage(string message, long senderId)
         {
-            var chatRoom = _chatRoomPool.FirstOrDefault(x => x.FirstUserId == senderId || x.SecondUserId == senderId);
+            var chatRoom = _chatRooms.FirstOrDefault(x => x.FirstUser.Info.UserId == senderId || x.SecondUser.Info.UserId == senderId);
 
             if (chatRoom != null)
             {
-                var recipientId = chatRoom.FirstUserId == senderId ? chatRoom.SecondUserId : chatRoom.FirstUserId;
-                await _messaging.SendMessage(message: message, recipient: recipientId);
+                await chatRoom.Send(message, senderId);
             }
         }
 
@@ -120,7 +127,7 @@ namespace TG.ChatBot.Host.Services.Communication
 
         public bool IsUserInChatRoom(long userId)
         {
-            var chatRoom = _chatRoomPool.FirstOrDefault(x => x.FirstUserId == userId || x.SecondUserId == userId);
+            var chatRoom = _chatRooms.FirstOrDefault(x => x.FirstUser.Info.UserId == userId || x.SecondUser.Info.UserId == userId);
 
             return chatRoom != null;
         }

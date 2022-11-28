@@ -1,4 +1,5 @@
 ﻿using TG.ChatBot.Common.ChatHub.Enums;
+using TG.ChatBot.Common.Common.Pattern;
 using TG.ChatBot.Common.Domain.Entities;
 
 namespace TG.ChatBot.Common.ChatHub.Models
@@ -32,7 +33,7 @@ namespace TG.ChatBot.Common.ChatHub.Models
         /// </summary>ц
         /// <param name="initiatorId"> Уникальный идентификатор инициатора закрытия общения </param>
         /// <returns> Возвращает комнату чата, если общение между пользователями закрылось; иначе null </returns>
-        ChatRoom? EndChat(long initiatorId);
+        ManagerMediator? EndChat(long initiatorId);
 
         /// <summary>
         /// Производит поиск собеседника для указанного пользователя с совпадением критериев двух пользователей

@@ -45,8 +45,8 @@ namespace TG.ChatBot.Host.Commands
 
             if (chatRoom != null)
             {
-                await NotifyEndChat(chatRoom.FirstUserId, chatRoom.FirstUserId, chatRoom.InitiatorEndId);
-                await NotifyEndChat(chatRoom.SecondUserId, chatRoom.SecondUserId, chatRoom.InitiatorEndId);
+                await NotifyEndChat(chatRoom.FirstUser.Info.UserId, chatRoom.FirstUser.Info.UserId, chatRoom.FirstUser.Info.UserId);
+                await NotifyEndChat(chatRoom.SecondUser.Info.UserId, chatRoom.SecondUser.Info.UserId, chatRoom.SecondUser.Info.UserId);
             }
         }
 
