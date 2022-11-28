@@ -8,19 +8,32 @@ namespace TG.ChatBot.Host.Services.Communication
 {
     public class ChatHub : IChatHub
     {
+        private static ChatHub? instance;
         private readonly ILogger<ChatHub> _logger;
         private readonly IMessaging _messaging;
 
         private readonly List<User> _usersSearchPool;
         private readonly List<ChatRoom> _chatRoomPool;
 
-        public ChatHub(ILogger<ChatHub> logger, IMessaging messaging)
+        protected ChatHub(ILogger<ChatHub> logger, IMessaging messaging)
         {
             _usersSearchPool = new List<User>();
             _chatRoomPool = new List<ChatRoom>();
 
             _logger = logger;
             _messaging = messaging;
+        }
+
+        public static ChatHub GetInstance(IServiceProvider serviceProvider)
+        {
+            if (instance == null)
+            {
+                var logger = serviceProvider.GetRequiredService<ILogger<ChatHub>>();
+                var messaging = serviceProvider.GetRequiredService<IMessaging>();
+                instance = new ChatHub(logger, messaging);
+            }
+
+            return instance;
         }
 
         public User? AddUserInSearchPool(User user)

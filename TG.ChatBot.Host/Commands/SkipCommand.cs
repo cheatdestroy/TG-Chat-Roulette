@@ -6,6 +6,7 @@ using Telegram.Bot.Types.ReplyMarkups;
 using TG.ChatBot.Common.ChatHub.Models;
 using TG.ChatBot.Common.Common.Helpers;
 using TG.ChatBot.Common.Models.Interfaces;
+using TG.ChatBot.Host.Services.Communication;
 
 namespace TG.ChatBot.Host.Commands
 {
@@ -18,7 +19,7 @@ namespace TG.ChatBot.Host.Commands
         public string Name => "Завершить общение";
         public List<string> Triggers { get; set; }
 
-        public SkipCommand(IChatHub chatHub, ILogger<SkipCommand> logger, ITelegramBotClient botClient)
+        public SkipCommand(IServiceProvider serviceProvider, ILogger<SkipCommand> logger, ITelegramBotClient botClient)
         {
             Triggers = new List<string>()
             {
@@ -26,7 +27,7 @@ namespace TG.ChatBot.Host.Commands
                 "/next"
             };
 
-            _chatHub = chatHub;
+            _chatHub = ChatHub.GetInstance(serviceProvider);
             _botClient = botClient;
             _logger = logger;
         }

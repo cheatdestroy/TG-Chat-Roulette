@@ -35,7 +35,6 @@ try
     builder.Services.AddTransient<RepositoryService>();
 
     builder.Services.AddSingleton<IMessaging, MessagingBase>();
-    builder.Services.AddSingleton<IChatHub, ChatHub>();
 
     builder.Services
         .AddHostedService<ConfigureWebHook>();
@@ -77,7 +76,7 @@ try
 
     builder.Logging.ClearProviders();
     builder.Host.UseNLog();
-
+    
     var app = builder.Build();
 
     app.UseHttpsRedirection();

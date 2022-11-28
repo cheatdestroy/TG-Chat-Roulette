@@ -6,6 +6,7 @@ using TG.ChatBot.Common.ChatHub.Models;
 using TG.ChatBot.Common.Common.Helpers;
 using TG.ChatBot.Common.Domain;
 using TG.ChatBot.Common.Models.Interfaces;
+using TG.ChatBot.Host.Services.Communication;
 
 namespace TG.ChatBot.Host.Commands
 {
@@ -21,7 +22,7 @@ namespace TG.ChatBot.Host.Commands
         public string Name => "Поиск собеседника";
         public List<string> Triggers { get; set; }
 
-        public SearchCommand(IChatHub chatHub, ITelegramBotClient botClient, RepositoryService repository)
+        public SearchCommand(IServiceProvider serviceProvider, ITelegramBotClient botClient, RepositoryService repository)
         {
             Triggers = new List<string>
             {
@@ -29,7 +30,7 @@ namespace TG.ChatBot.Host.Commands
                 "/search"
             };
 
-            _chatHub = chatHub;
+            _chatHub = ChatHub.GetInstance(serviceProvider);
             _botClient = botClient;
             _repository = repository;
         }

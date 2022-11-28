@@ -5,6 +5,7 @@ using TG.ChatBot.Common.ChatHub.Models;
 using TG.ChatBot.Common.Common.Helpers;
 using TG.ChatBot.Common.Models.Interfaces;
 using TG.ChatBot.Common.StepByStep.Interfaces;
+using TG.ChatBot.Host.Services.Communication;
 
 namespace TG.ChatBot.Host.Controllers
 {
@@ -17,12 +18,12 @@ namespace TG.ChatBot.Host.Controllers
         private readonly IActionService _actionService;
         private readonly IChatHub _chatHub;
 
-        public WebhookController(ILogger<WebhookController> logger, ICommandService commandService, IActionService actionService, IChatHub chatHub)
+        public WebhookController(ILogger<WebhookController> logger, ICommandService commandService, IActionService actionService, IServiceProvider serviceProvider)
         {
             _logger = logger;
             _commandService = commandService;
             _actionService = actionService;
-            _chatHub = chatHub;
+            _chatHub = ChatHub.GetInstance(serviceProvider);
         }
 
         /// <summary>

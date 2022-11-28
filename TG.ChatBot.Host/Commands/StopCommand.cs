@@ -4,6 +4,7 @@ using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 using TG.ChatBot.Common.ChatHub.Models;
 using TG.ChatBot.Common.Models.Interfaces;
+using TG.ChatBot.Host.Services.Communication;
 
 namespace TG.ChatBot.Host.Commands
 {
@@ -15,14 +16,14 @@ namespace TG.ChatBot.Host.Commands
         public string Name => "Остановка поиска собеседника";
         public List<string> Triggers { get; set; }
 
-        public StopCommand(IChatHub chatHub, ITelegramBotClient botClient)
+        public StopCommand(IServiceProvider serviceProvider, ITelegramBotClient botClient)
         {
             Triggers = new List<string>()
             {
                 "/stop"
             };
 
-            _chatHub = chatHub;
+            _chatHub = ChatHub.GetInstance(serviceProvider);
             _botClient = botClient;
         }
 
