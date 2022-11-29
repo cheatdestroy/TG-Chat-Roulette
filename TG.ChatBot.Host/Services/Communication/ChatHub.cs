@@ -15,12 +15,12 @@ namespace TG.ChatBot.Host.Services.Communication
         private readonly ITelegramBotClient _botClient;
 
         private readonly List<User> _usersSearchPool;
-        private readonly List<ManagerMediator> _chatRooms;
+        private readonly List<ChatRoomMediator> _chatRooms;
 
         protected ChatHub(ILogger<ChatHub> logger, ITelegramBotClient botClient)
         {
             _usersSearchPool = new List<User>();
-            _chatRooms = new List<ManagerMediator>();
+            _chatRooms = new List<ChatRoomMediator>();
 
             _logger = logger;
             _botClient = botClient;
@@ -69,7 +69,7 @@ namespace TG.ChatBot.Host.Services.Communication
             return user;
         }
 
-        public ManagerMediator? EndChat(long initiatorId)
+        public ChatRoomMediator? EndChat(long initiatorId)
         {
             var chatRoom = _chatRooms.FirstOrDefault(x => x.FirstUser.Info.UserId == initiatorId || x.SecondUser.Info.UserId == initiatorId);
 
@@ -96,13 +96,11 @@ namespace TG.ChatBot.Host.Services.Communication
                 StartDate = DateTime.Now
             };
 
-            var mediator = new ManagerMediator();
-            var firstInterlocutor = new Interlocutor(mediator, firstUser, _botClient);
-            var secondInterlocutor = new Interlocutor(mediator, secondUser, _botClient);
-            mediator.FirstUser = firstInterlocutor;
-            mediator.SecondUser = secondInterlocutor;
+            var firstInterlocutor = new Interlocutor(firstUser, _botClient);
+            var secondInterlocutor = new Interlocutor(secondUser, _botClient);
+            var chatRoom = new ChatRoomMediator(firstInterlocutor, secondInterlocutor);
 
-            _chatRooms.Add(mediator);
+            _chatRooms.Add(chatRoom);
             _logger.LogInformation("New chat room launched");
 
             return newChatRoom;

@@ -2,8 +2,8 @@
 
 namespace TG.ChatBot.Common.Common.Pattern
 {
-    public abstract class Mediator
+    public interface IMediator
     {
-        public abstract Task Send(string message, long userId);
+        Task Send(string message, long userId);
     }
 }

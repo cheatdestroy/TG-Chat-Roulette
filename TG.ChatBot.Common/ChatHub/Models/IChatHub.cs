@@ -33,7 +33,7 @@ namespace TG.ChatBot.Common.ChatHub.Models
         /// </summary>ц
         /// <param name="initiatorId"> Уникальный идентификатор инициатора закрытия общения </param>
         /// <returns> Возвращает комнату чата, если общение между пользователями закрылось; иначе null </returns>
-        ManagerMediator? EndChat(long initiatorId);
+        ChatRoomMediator? EndChat(long initiatorId);
 
         /// <summary>
         /// Производит поиск собеседника для указанного пользователя с совпадением критериев двух пользователей

@@ -8,16 +8,17 @@ namespace TG.ChatBot.Common.Common.Pattern
     {
         private readonly ITelegramBotClient _botClient;
 
-        protected Mediator mediator;
+        protected IMediator mediator = null!;
 
         public User Info { get; set; }
 
-        public Interlocutor(Mediator mediator, User info, ITelegramBotClient botClient)
+        public Interlocutor(User info, ITelegramBotClient botClient)
         {
-            this.mediator = mediator;
             Info = info;
             _botClient = botClient;
         }
+
+        public void SetMediator(IMediator mediator) => this.mediator = mediator;
 
         public virtual void Send(string message)
         {
