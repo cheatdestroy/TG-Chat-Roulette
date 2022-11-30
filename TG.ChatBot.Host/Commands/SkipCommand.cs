@@ -32,50 +32,18 @@ namespace TG.ChatBot.Host.Commands
             _logger = logger;
         }
 
-        public async Task Execute(Update update)
+        public Task Execute(Update update)
         {
             var userId = update.GetSenderId();
 
             if (!userId.HasValue)
             {
-                return;
+                return Task.CompletedTask;
             }
 
-            var chatRoom = _chatHub.EndChat(userId.Value);
+            _chatHub.EndChat(userId.Value);
 
-            if (chatRoom != null)
-            {
-                await NotifyEndChat(chatRoom.FirstUser.Info.UserId, chatRoom.FirstUser.Info.UserId, chatRoom.FirstUser.Info.UserId);
-                await NotifyEndChat(chatRoom.SecondUser.Info.UserId, chatRoom.SecondUser.Info.UserId, chatRoom.SecondUser.Info.UserId);
-            }
-        }
-
-        private async Task NotifyEndChat(long chatId, long userId, long? initiatorId)
-        {
-            var isInitiator = initiatorId == userId;
-            var textMessage = new StringBuilder(isInitiator ? "Вы завершили чат." : "Собеседник завершил чат!");
-            textMessage.Append("\n\nНайти нового собеседника 👉🏻 /find\n\n");
-            textMessage.Append("👇🏻 Оцените собеседника 👇🏻");
-
-            var keyboard = new InlineKeyboardMarkup(
-                new[]
-                {
-                    new[]
-                    {
-                        InlineKeyboardButton.WithCallbackData("👍🏻", "0"),
-                        InlineKeyboardButton.WithCallbackData("👎🏻", "0")
-                    },
-                    new[]
-                    {
-                        InlineKeyboardButton.WithCallbackData("⚠️ Пожаловаться ⚠️", "0")
-                    }
-                });
-
-            await _botClient.SendTextMessageAsync(
-                chatId: chatId,
-                text: textMessage.ToString(),
-                parseMode: ParseMode.Markdown,
-                replyMarkup: keyboard);
+            return Task.CompletedTask;
         }
     }
 }

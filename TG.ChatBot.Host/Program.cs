@@ -34,10 +34,9 @@ try
     builder.Services.AddTransient<IAction, ActionsRepository>();
     builder.Services.AddTransient<RepositoryService>();
 
-    builder.Services.AddSingleton<IMessaging, MessagingBase>();
-
     builder.Services
-        .AddHostedService<ConfigureWebHook>();
+        .AddHostedService<ConfigureWebHook>()
+        .AddHostedService<NotifyChatRoomEvents>();
 
     // Добавление сервиса последовательных действий
     builder.Services.AddActionService<ActionService>();

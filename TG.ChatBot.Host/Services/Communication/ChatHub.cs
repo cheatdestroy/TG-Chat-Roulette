@@ -4,6 +4,7 @@ using TG.ChatBot.Common.ChatHub.Models;
 using TG.ChatBot.Common.Common.Enums;
 using TG.ChatBot.Common.Common.Helpers;
 using TG.ChatBot.Common.Common.Pattern;
+using TG.ChatBot.Common.Common.Patterns.PatternObserver;
 using TG.ChatBot.Common.Domain.Entities;
 
 namespace TG.ChatBot.Host.Services.Communication
@@ -16,20 +17,23 @@ namespace TG.ChatBot.Host.Services.Communication
 
         private readonly List<User> _usersSearchPool;
         private readonly List<ChatRoomMediator> _chatRooms;
+        private readonly List<IObserver> _observers;
 
         protected ChatHub(ILogger<ChatHub> logger, ITelegramBotClient botClient)
         {
             _usersSearchPool = new List<User>();
             _chatRooms = new List<ChatRoomMediator>();
+            _observers = new List<IObserver>();
 
             _logger = logger;
             _botClient = botClient;
         }
 
-        public static ChatHub GetInstance(IServiceProvider serviceProvider)
+        public static ChatHub GetInstance(IServiceProvider? serviceProvider = null)
         {
             if (instance == null)
             {
+                Argument.NotNull(serviceProvider, "Service provider is null");
                 var logger = serviceProvider.GetRequiredService<ILogger<ChatHub>>();
                 var botClient = serviceProvider.GetRequiredService<ITelegramBotClient>();
                 instance = new ChatHub(logger, botClient);
@@ -76,6 +80,7 @@ namespace TG.ChatBot.Host.Services.Communication
             if (chatRoom != null)
             {
                 _chatRooms.Remove(chatRoom);
+                Notify(chatRoom, initiatorId, NotifyTypeEnum.EndChatRoom);
                 //chatRoom.InitiatorEndId = initiatorId;
                 _logger.LogInformation("One of the chats was completed");
             }
@@ -101,6 +106,7 @@ namespace TG.ChatBot.Host.Services.Communication
             var chatRoom = new ChatRoomMediator(firstInterlocutor, secondInterlocutor);
 
             _chatRooms.Add(chatRoom);
+            Notify(chatRoom, firstUser.UserId, NotifyTypeEnum.StartChatRoom);
             _logger.LogInformation("New chat room launched");
 
             return newChatRoom;
@@ -195,6 +201,21 @@ namespace TG.ChatBot.Host.Services.Communication
             var result = IsEligible(firstUser, secondUser) && IsEligible(secondUser, firstUser);
 
             return result;
+        }
+
+        public void Watch(IObserver observer)
+        {
+            _observers.Add(observer);
+        }
+
+        public void StopWatching(IObserver observer)
+        {
+            _observers.Remove(observer);
+        }
+
+        public void Notify(ChatRoomMediator chatRoom, long initiatorId, NotifyTypeEnum type)
+        {
+            _observers.ForEach(observer => observer.Update(chatRoom, initiatorId, type));
         }
     }
 }

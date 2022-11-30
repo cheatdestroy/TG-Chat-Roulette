@@ -66,12 +66,7 @@ namespace TG.ChatBot.Host.Commands
                 {
                     var potentialUser = _chatHub.FindInterlocutor(user, true);
 
-                    if (potentialUser != null)
-                    {
-                        await NotifyUserFound(user.UserId);
-                        await NotifyUserFound(potentialUser.UserId);
-                    }
-                    else
+                    if (potentialUser == null)
                     {
                         _chatHub.AddUserInSearchPool(user);
                     }
@@ -80,18 +75,6 @@ namespace TG.ChatBot.Host.Commands
             catch (Exception ex)
             {
             }
-        }
-
-        private async Task NotifyUserFound(long chatId)
-        {
-            var textMessage = new StringBuilder("Собеседник найден!\n\n");
-            textMessage.Append("Следующий собеседник 👉🏻 /next\n");
-            textMessage.Append("Закончить диалог 👉🏻 /skip");
-
-            await _botClient.SendTextMessageAsync(
-                    chatId: chatId,
-                    text: textMessage.ToString(),
-                    parseMode: ParseMode.Markdown);
         }
     }
 }

@@ -1,10 +1,11 @@
 ﻿using TG.ChatBot.Common.ChatHub.Enums;
 using TG.ChatBot.Common.Common.Pattern;
+using TG.ChatBot.Common.Common.Patterns.PatternObserver;
 using TG.ChatBot.Common.Domain.Entities;
 
 namespace TG.ChatBot.Common.ChatHub.Models
 {
-    public interface IChatHub
+    public interface IChatHub : IObserved
     {
         /// <summary>
         /// Добавляет пользователя в пул поиска
