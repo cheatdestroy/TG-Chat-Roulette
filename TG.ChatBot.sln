@@ -5,7 +5,9 @@ VisualStudioVersion = 17.2.32602.215
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TG.ChatBot.Host", "TG.ChatBot.Host\TG.ChatBot.Host.csproj", "{F9BC9A75-5BDB-4293-BC47-1A4B31CD9AD9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TG.ChatBot.Common", "TG.ChatBot.Common\TG.ChatBot.Common.csproj", "{D98B88E4-CF0A-43B5-B0C0-04DAA7A9F764}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TG.ChatBot.Common", "TG.ChatBot.Common\TG.ChatBot.Common.csproj", "{D98B88E4-CF0A-43B5-B0C0-04DAA7A9F764}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TG.ChatBot.Tests", "TG.ChatBot.Tests\TG.ChatBot.Tests.csproj", "{6E49DEA1-C2DD-47D4-B139-A80259C4C4CC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{D98B88E4-CF0A-43B5-B0C0-04DAA7A9F764}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D98B88E4-CF0A-43B5-B0C0-04DAA7A9F764}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D98B88E4-CF0A-43B5-B0C0-04DAA7A9F764}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6E49DEA1-C2DD-47D4-B139-A80259C4C4CC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6E49DEA1-C2DD-47D4-B139-A80259C4C4CC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6E49DEA1-C2DD-47D4-B139-A80259C4C4CC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6E49DEA1-C2DD-47D4-B139-A80259C4C4CC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
