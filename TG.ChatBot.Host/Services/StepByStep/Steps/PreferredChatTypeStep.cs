@@ -5,6 +5,7 @@ using Telegram.Bot.Types.ReplyMarkups;
 using TG.ChatBot.Common.Common.Enums;
 using TG.ChatBot.Common.Common.Helpers;
 using TG.ChatBot.Common.Domain;
+using TG.ChatBot.Common.Domain.Entities;
 using TG.ChatBot.Common.StepByStep.Enums;
 using TG.ChatBot.Common.StepByStep.Interfaces;
 
@@ -26,35 +27,35 @@ namespace TG.ChatBot.Host.Services.StepsByStep.Steps
             _repository = repository;
         }
 
-        public async Task Execute(long chatId)
+        public async Task Execute(User user)
         {
             var keyboard = new InlineKeyboardMarkup(
                 new[]
                 {
-                    InlineKeyboardButton.WithCallbackData("обычный 📨", CommunicationType.Standart.ToString("d")),
-                    InlineKeyboardButton.WithCallbackData("голосовые сообщения 🎤", CommunicationType.OnlyVoice.ToString("d"))
+                    InlineKeyboardButton.WithCallbackData("📨 обычный", CommunicationType.Standart.ToString("d")),
+                    InlineKeyboardButton.WithCallbackData("🎤 голосовые сообщения", CommunicationType.OnlyVoice.ToString("d"))
                 });
 
-            var textMessage = new StringBuilder("Выберите предпочитаемый тип чата\n\n");
-            textMessage.Append("1. *обычный* - стандартный привычный чат, с возможностью обмена любыми типами сообщений\n");
+            var textMessage = new StringBuilder("💬 Выберите предпочитаемый тип чата\n\n");
+            textMessage.Append("1. *обычный* - стандартный чат, с возможностью обмена любыми типами сообщений\n");
             textMessage.Append("2. *голосовые сообщений* - возможность отправлять только голосовые сообщения");
             await _botClient.SendTextMessageAsync(
-                chatId: chatId,
+                chatId: user.UserId,
                 text: textMessage.ToString(),
                 parseMode: ParseMode.Markdown, replyMarkup: keyboard);
         }
 
-        public async Task Processing(string data, long userId, Action<long, IStep, Step> action)
+        public async Task Processing(string data, User user, Action<User, IStep, Step> action)
         {
             var chatType = int.Parse(data).ToEnum<CommunicationType>();
 
             await Argument.NotNull(
                 value: chatType,
                 message: $"_Выбран неверный тип общения: {chatType.GetDescription()}_",
-                chatId: userId,
+                chatId: user.UserId,
                 botClient: _botClient);
 
-            await _repository.Settings.SaveSetting(userId: userId, preferredChatType: (int)chatType);
+            await _repository.Settings.SaveSetting(userId: user.UserId, preferredChatType: (int)chatType);
         }
     }
 }

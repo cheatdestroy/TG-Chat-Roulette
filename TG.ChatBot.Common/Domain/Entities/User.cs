@@ -20,5 +20,7 @@ namespace TG.ChatBot.Common.Domain.Entities
         public virtual ActionData? Action { get; set; }
         public virtual ICollection<ChatRoom> ChatRoomFirstUsers { get; set; }
         public virtual ICollection<ChatRoom> ChatRoomSecondUsers { get; set; }
+        public virtual ICollection<IgnoreUsers> IgnoredUsersOwner { get; set; }
+        public virtual ICollection<IgnoreUsers> IgnoredUsersTarget { get; set; }
     }
 }

@@ -40,10 +40,10 @@ namespace TG.ChatBot.Common.StepByStep.Interfaces
         /// <summary>
         /// Изменяет текущий шаг действия на указанный
         /// </summary>
-        /// <param name="userId"> Уникальный идентификатор пользователя </param>
+        /// <param name="user"> Пользователь </param>
         /// <param name="currentStepId"> Идентификатор текущего шага </param>
         /// <param name="nextStepId"> Идентификатор нового шага </param>
         /// <returns></returns>
-        void ChangeStep(long userId, IStep currentStepId, Step nextStepId);
+        void ChangeStep(Domain.Entities.User user, IStep currentStepId, Step nextStepId);
     }
 }

@@ -5,6 +5,7 @@ using Telegram.Bot.Types.ReplyMarkups;
 using TG.ChatBot.Common.Common.Enums;
 using TG.ChatBot.Common.Common.Helpers;
 using TG.ChatBot.Common.Domain;
+using TG.ChatBot.Common.Domain.Entities;
 using TG.ChatBot.Common.StepByStep.Enums;
 using TG.ChatBot.Common.StepByStep.Interfaces;
 
@@ -26,7 +27,7 @@ namespace TG.ChatBot.Host.Services.StepsByStep.Steps
             _repository = repository;
         }
 
-        public async Task Execute(long chatId)
+        public async Task Execute(User user)
         {
             var keyboard = new InlineKeyboardMarkup(
                 new[]
@@ -53,24 +54,24 @@ namespace TG.ChatBot.Host.Services.StepsByStep.Steps
                     },
                 });
 
-            var textMessage = new StringBuilder("Выберите возраст собеседника");
+            var textMessage = new StringBuilder("🎂 Выберите возраст собеседника");
             await _botClient.SendTextMessageAsync(
-                chatId: chatId,
+                chatId: user.UserId,
                 text: textMessage.ToString(),
                 parseMode: ParseMode.Markdown, replyMarkup: keyboard);
         }
 
-        public async Task Processing(string data, long userId, Action<long, IStep, Step> action)
+        public async Task Processing(string data, User user, Action<User, IStep, Step> action)
         {
             var preferredAge = int.Parse(data).ToEnum<AgeCategory>();
 
             await Argument.NotNull(
                 value: preferredAge,
                 message: $"_Выбран неверный возраст собеседника: {preferredAge?.GetAgeRangeDescription()}_",
-                chatId: userId,
+                chatId: user.UserId,
                 botClient: _botClient);
 
-            await _repository.Settings.SaveSetting(userId: userId, preferredAge: (int)preferredAge);
+            await _repository.Settings.SaveSetting(userId: user.UserId, preferredAge: (int)preferredAge);
         }
     }
 }

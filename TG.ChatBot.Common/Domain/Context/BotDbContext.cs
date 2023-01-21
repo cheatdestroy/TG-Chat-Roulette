@@ -18,9 +18,25 @@ namespace TG.ChatBot.Common.Domain.Context
         public virtual DbSet<User> Users { get; set; } = null!;
         public virtual DbSet<UserSetting> UserSettings { get; set; } = null!;
         public virtual DbSet<ActionData> Actions { get; set; } = null!;
+        public virtual DbSet<IgnoreUsers> IgnoreUsers { get; set; } = null!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<IgnoreUsers>(entity =>
+            {
+                entity.HasKey(e => new { e.UserId, e.IgnoredUserId });
+
+                entity.HasOne(d => d.User)
+                    .WithMany(p => p.IgnoredUsersOwner)
+                    .HasForeignKey(d => d.UserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull);
+
+                entity.HasOne(d => d.IgnoredUser)
+                    .WithMany(p => p.IgnoredUsersTarget)
+                    .HasForeignKey(d => d.IgnoredUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull);
+            });
+
             modelBuilder.Entity<ChatRoom>(entity =>
             {
                 entity.HasKey(e => new { e.Id, e.FirstUserId, e.SecondUserId });

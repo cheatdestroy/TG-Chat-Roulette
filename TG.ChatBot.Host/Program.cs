@@ -32,9 +32,12 @@ try
     builder.Services.AddTransient<IUser, UsersRepository>();
     builder.Services.AddTransient<ISettings, SettingsRepository>();
     builder.Services.AddTransient<IAction, ActionsRepository>();
+    builder.Services.AddTransient<IChatRoom, ChatRoomRepository>();
+    builder.Services.AddTransient<IUsersIgnored, UsersIgnoredRepository>();
     builder.Services.AddTransient<RepositoryService>();
 
-    builder.Services.AddSingleton<IMessaging, MessagingBase>();
+    builder.Services.AddSingleton<IChatRoomManager, ChatRoomManager>();
+    builder.Services.AddSingleton<IMessaging, Messaging>();
     builder.Services.AddSingleton<IChatHub, ChatHub>();
 
     builder.Services
@@ -63,7 +66,8 @@ try
         .AddCommand<StopCommand>()
         .AddCommand<SearchCommand>()
         .AddCommand<SkipCommand>()
-        .AddCommand<ProfileCommand>();
+        .AddCommand<ProfileCommand>()
+        .AddCommand<StatsCommand>();
 
     // Замена стандартного HttpClient
     builder.Services.AddHttpClient("tgwebhook")

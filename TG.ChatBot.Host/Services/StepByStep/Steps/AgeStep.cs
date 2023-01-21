@@ -3,6 +3,7 @@ using Telegram.Bot;
 using Telegram.Bot.Types.Enums;
 using TG.ChatBot.Common.Common.Helpers;
 using TG.ChatBot.Common.Domain;
+using TG.ChatBot.Common.Domain.Entities;
 using TG.ChatBot.Common.Models;
 using TG.ChatBot.Common.StepByStep.Enums;
 using TG.ChatBot.Common.StepByStep.Interfaces;
@@ -27,16 +28,16 @@ namespace TG.ChatBot.Host.Services.StepsByStep.Steps
             _repository = repository;
         }
 
-        public async Task Execute(long chatId)
+        public async Task Execute(User user)
         {
-            var textMessage = new StringBuilder("Введите ваш возраст");
+            var textMessage = new StringBuilder("🎂 Введите ваш возраст");
             await _botClient.SendTextMessageAsync(
-                chatId: chatId,
+                chatId: user.UserId,
                 text: textMessage.ToString(),
                 parseMode: ParseMode.Markdown);
         }
 
-        public async Task Processing(string data, long userId, Action<long, IStep, Step> action)
+        public async Task Processing(string data, User user, Action<User, IStep, Step> action)
         {
             var age = int.Parse(data);
             var minimumAge = _configuration.MinimumAge;
@@ -47,10 +48,10 @@ namespace TG.ChatBot.Host.Services.StepsByStep.Steps
                 maxValue: maximumAge,
                 minValue: minimumAge,
                 message: $"_Возраст не может быть меньше {minimumAge} или больше {maximumAge}_",
-                chatId: userId,
+                chatId: user.UserId,
                 botClient: _botClient);
 
-            await _repository.User.SaveUser(userId: userId, age: age);
+            await _repository.User.SaveUser(userId: user.UserId, age: age);
         }
     }
 }

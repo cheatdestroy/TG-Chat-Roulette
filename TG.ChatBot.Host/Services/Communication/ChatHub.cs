@@ -1,26 +1,29 @@
-﻿using TG.ChatBot.Common.ChatHub.Enums;
+﻿using Telegram.Bot;
+using Telegram.Bot.Types;
+using Telegram.Bot.Types.Enums;
+using TG.ChatBot.Common.ChatHub.Enums;
 using TG.ChatBot.Common.ChatHub.Models;
 using TG.ChatBot.Common.Common.Enums;
 using TG.ChatBot.Common.Common.Helpers;
 using TG.ChatBot.Common.Domain.Entities;
+using User = TG.ChatBot.Common.Domain.Entities.User;
 
 namespace TG.ChatBot.Host.Services.Communication
 {
     public class ChatHub : IChatHub
     {
         private readonly ILogger<ChatHub> _logger;
+
+        private static List<User> _usersSearchPool = new List<User>();
+        private readonly IChatRoomManager _chatRoomManager;
         private readonly IMessaging _messaging;
 
-        private readonly List<User> _usersSearchPool;
-        private readonly List<ChatRoom> _chatRoomPool;
-
-        public ChatHub(ILogger<ChatHub> logger, IMessaging messaging)
+        public ChatHub(ILogger<ChatHub> logger, IMessaging messaging, IChatRoomManager chatRoomManager)
         {
-            _usersSearchPool = new List<User>();
-            _chatRoomPool = new List<ChatRoom>();
+            _messaging = messaging;
+            _chatRoomManager = chatRoomManager;
 
             _logger = logger;
-            _messaging = messaging;
         }
 
         public User? AddUserInSearchPool(User user)
@@ -54,47 +57,33 @@ namespace TG.ChatBot.Host.Services.Communication
             return user;
         }
 
-        public ChatRoom? EndChat(long initiatorId)
+        public async Task<ChatRoom?> EndChat(long initiatorId)
         {
-            var chatRoom = _chatRoomPool.FirstOrDefault(x => x.FirstUserId == initiatorId || x.SecondUserId == initiatorId);
+            var removedChatRoom = await _chatRoomManager.RemoveChatRoom(initiatorId);
+            _logger.LogInformation("One of the chats was completed");
 
-            if (chatRoom != null)
-            {
-                _chatRoomPool.Remove(chatRoom);
-                chatRoom.InitiatorEndId = initiatorId;
-                _logger.LogInformation("One of the chats was completed");
-            }
-
-            return chatRoom;
+            return removedChatRoom;
         }
 
-        public ChatRoom? StartChat(User firstUser, User secondUser)
+        public async Task<ChatRoom?> StartChat(User firstUser, User secondUser)
         {
             RemoveUserFromSearchPool(firstUser.UserId);
             RemoveUserFromSearchPool(secondUser.UserId);
 
-            var newChatRoom = new ChatRoom()
-            {
-                FirstUserId = firstUser.UserId,
-                SecondUserId = secondUser.UserId,
-                StatusRoom = (int)StatusRoom.Open,
-                StartDate = DateTime.Now
-            };
-
-            _chatRoomPool.Add(newChatRoom);
+            var chatRoom = await _chatRoomManager.CreateChatRoom(firstUser, secondUser);
             _logger.LogInformation("New chat room launched");
 
-            return newChatRoom;
+            return chatRoom;
         }
 
-        public async Task RedirectMessage(string message, long senderId)
+        public async Task RedirectMessage(Message message, long senderId)
         {
-            var chatRoom = _chatRoomPool.FirstOrDefault(x => x.FirstUserId == senderId || x.SecondUserId == senderId);
+            var recipient = _chatRoomManager.GetInterlocutor(senderId);
 
-            if (chatRoom != null)
+            if (recipient != null)
             {
-                var recipientId = chatRoom.FirstUserId == senderId ? chatRoom.SecondUserId : chatRoom.FirstUserId;
-                await _messaging.SendMessage(message: message, recipient: recipientId);
+                await _messaging.SendMessage(message, recipient.UserId);
+                _chatRoomManager.IncrementMessagesCounter(senderId);
             }
         }
 
@@ -107,7 +96,7 @@ namespace TG.ChatBot.Host.Services.Communication
 
         public bool IsUserInChatRoom(long userId)
         {
-            var chatRoom = _chatRoomPool.FirstOrDefault(x => x.FirstUserId == userId || x.SecondUserId == userId);
+            var chatRoom = _chatRoomManager.GetChatRoomByUserId(userId);
 
             return chatRoom != null;
         }

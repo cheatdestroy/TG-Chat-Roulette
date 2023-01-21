@@ -51,9 +51,9 @@ namespace TG.ChatBot.Host.Controllers
 
             if (userId != null)
             {
-                var message = update.Message?.Text;
+                var message = update.Message;
 
-                if (_chatHub.IsUserInChatRoom(userId.Value) && !string.IsNullOrEmpty(message))
+                if (_chatHub.IsUserInChatRoom(userId.Value) && message != null)
                 {
                     await _chatHub.RedirectMessage(message: message, senderId: userId.Value);
                 }

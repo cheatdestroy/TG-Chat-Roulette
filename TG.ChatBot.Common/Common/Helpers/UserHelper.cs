@@ -25,11 +25,11 @@ namespace TG.ChatBot.Common.Common.Helpers
             var preferredAge = user.UserSetting?.PreferredAge?.ToEnum<AgeCategory>()?.GetAgeRangeDescription();
 
             var userInfo = new StringBuilder();
-            userInfo.Append($"Ваш пол: {gender}\n");
-            userInfo.Append($"Ваш возраст: {user.Age.ToString() ?? "неизвестно"}\n");
-            userInfo.Append($"Предпочитаемый тип чата: {chatType}\n");
-            userInfo.Append($"Предпочитаемый пол собеседника: {preferredGender}\n");
-            userInfo.Append($"Предпочитаемый возраст собеседника: {preferredAge}");
+            userInfo.Append($"👤 Ваш пол: {gender}\n");
+            userInfo.Append($"🎂 Ваш возраст: {user.Age.ToString() ?? "неизвестно"}\n");
+            userInfo.Append($"🗣 Предпочитаемый тип чата: {chatType}\n");
+            userInfo.Append($"👤 Предпочитаемый пол собеседника: {preferredGender}\n");
+            userInfo.Append($"🎂 Предпочитаемый возраст собеседника: {preferredAge}");
 
             return userInfo;
         }

@@ -5,6 +5,7 @@ using Telegram.Bot.Types.ReplyMarkups;
 using TG.ChatBot.Common.Common.Helpers;
 using TG.ChatBot.Common.StepByStep.Enums;
 using TG.ChatBot.Common.StepByStep.Interfaces;
+using TG.ChatBot.Common.Domain.Entities;
 
 namespace TG.ChatBot.Host.Services.StepByStep.Steps
 {
@@ -19,9 +20,11 @@ namespace TG.ChatBot.Host.Services.StepByStep.Steps
             _botClient = botClient;
         }
 
-        public async Task Execute(long chatId)
+        public async Task Execute(User user)
         {
-            var textMessage = new StringBuilder("Выберите данные, которые хотите изменить:");
+            var userInfo = user.FormatUserInfo();
+            var textMessage = new StringBuilder($"{userInfo.ToString()}\n\n");
+            textMessage.Append("Выберите данные, которые хотите изменить:");
             var keyboard = new InlineKeyboardMarkup(
                 new[]
                 {
@@ -42,19 +45,19 @@ namespace TG.ChatBot.Host.Services.StepByStep.Steps
                 });
 
             await _botClient.SendTextMessageAsync(
-                chatId: chatId,
+                chatId: user.UserId,
                 text: textMessage.ToString(),
                 replyMarkup: keyboard,
                 parseMode: ParseMode.Markdown);
         }
 
-        public Task Processing(string data, long userId, Action<long, IStep, Step> action)
+        public Task Processing(string data, User user, Action<User, IStep, Step> action)
         {
             var step = int.Parse(data).ToEnum<Step>();
 
             if (step != null)
             {
-                action.Invoke(userId, this, step.Value);
+                action.Invoke(user, this, step.Value);
             }
 
             return Task.CompletedTask;

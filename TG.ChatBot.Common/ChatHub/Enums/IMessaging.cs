@@ -1,13 +1,10 @@
-﻿namespace TG.ChatBot.Common.ChatHub.Enums
+﻿using Telegram.Bot.Types;
+using Telegram.Bot.Types.Enums;
+
+namespace TG.ChatBot.Common.ChatHub.Enums
 {
     public interface IMessaging
     {
-        /// <summary>
-        /// Отправляет сообщение собеседнику
-        /// </summary>
-        /// <param name="message"> Сообщение </param>
-        /// <param name="recipient"> Получатель </param>
-        /// <returns></returns>
-        Task SendMessage(string message, long recipient);
+        Task SendMessage(Message message, long userId);
     }
 }

@@ -1,5 +1,8 @@
-﻿using TG.ChatBot.Common.ChatHub.Enums;
+﻿using Telegram.Bot.Types;
+using Telegram.Bot.Types.Enums;
+using TG.ChatBot.Common.ChatHub.Enums;
 using TG.ChatBot.Common.Domain.Entities;
+using User = TG.ChatBot.Common.Domain.Entities.User;
 
 namespace TG.ChatBot.Common.ChatHub.Models
 {
@@ -25,14 +28,14 @@ namespace TG.ChatBot.Common.ChatHub.Models
         /// <param name="firstUser"> Первый пользователь </param>
         /// <param name="secondUser"> Второй пользователь </param>
         /// <returns> Возвращает комнату чата, если она была создана; иначе null </returns>
-        ChatRoom? StartChat(User firstUser, User secondUser);
+        Task<ChatRoom?> StartChat(User firstUser, User secondUser);
 
         /// <summary>
         /// Закрывает общение между двумя пользователями
         /// </summary>ц
         /// <param name="initiatorId"> Уникальный идентификатор инициатора закрытия общения </param>
         /// <returns> Возвращает комнату чата, если общение между пользователями закрылось; иначе null </returns>
-        ChatRoom? EndChat(long initiatorId);
+        Task<ChatRoom?> EndChat(long initiatorId);
 
         /// <summary>
         /// Производит поиск собеседника для указанного пользователя с совпадением критериев двух пользователей
@@ -47,7 +50,7 @@ namespace TG.ChatBot.Common.ChatHub.Models
         /// </summary>
         /// <param name="message"> Текст сообщения </param>
         /// <param name="senderId"> Уникальный идентификатор отправителя </param>
-        Task RedirectMessage(string message, long senderId);
+        Task RedirectMessage(Message message, long senderId);
 
         /// <summary>
         /// Проверяет пользователя на его нахождении в пуле поиска

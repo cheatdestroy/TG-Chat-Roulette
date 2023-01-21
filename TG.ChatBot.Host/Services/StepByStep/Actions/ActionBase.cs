@@ -45,12 +45,11 @@ namespace TG.ChatBot.Host.Services.StepByStep.Actions
 
             try
             {
-                var chatId = user.UserId;
                 var currentStepData = Steps.GetStepById(stepId: currentStep.Value);
 
                 if (currentStepData != null)
                 {
-                    await currentStepData.Execute(chatId: chatId);
+                    await currentStepData.Execute(user);
                     await _repository.Action.SaveAction(
                         userId: user.UserId,
                         actionId: (int)Action,
@@ -101,7 +100,7 @@ namespace TG.ChatBot.Host.Services.StepByStep.Actions
                     return;
                 }
 
-                await currentStepData.Processing(data: data, userId: userId, ChangeStep);
+                await currentStepData.Processing(data: data, user: user, ChangeStep);
                 await SetNextStep(userId);
             }
             catch (Exception ex)
@@ -117,7 +116,7 @@ namespace TG.ChatBot.Host.Services.StepByStep.Actions
             throw new NotImplementedException("FinishAction is not implemented");
         }
 
-        public virtual void ChangeStep(long userId, IStep currentStepId, Step nextStepId)
+        public virtual void ChangeStep(Common.Domain.Entities.User user, IStep currentStepId, Step nextStepId)
         {
             var isFound = Steps.GetStepById(nextStepId);
 
